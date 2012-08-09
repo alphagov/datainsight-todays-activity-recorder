@@ -3,7 +3,32 @@ require "bundler/setup"
 require 'sinatra'
 require 'json'
 
-get '/todays-activity.json' do
+require_relative "unique_visitors_model"
+require_relative "todays_activity"
+require_relative "datamapper_config"
+
+configure do
+  unless test?
+    DataMapperConfig.configure
+  end
+end
+
+get '/todays-activity' do
   content_type :json
-  {}.to_json
+  today     = Hash[TodaysActivity.visitors_today.map {|each| [each.start_at.hour, each.value] }]
+  yesterday = Hash[TodaysActivity.visitors_yesterday.map {|each| [each.start_at.hour, each.value]}]
+  todays_activity = (0..23).map { |hour|
+    result = {
+      :time => hour,
+      :visitors => {
+        :yesterday => yesterday[hour]
+      }
+    }
+    if today[hour]
+      result[:visitors][:today] = today[hour]
+    end
+    result
+  }
+
+  todays_activity.to_json
 end

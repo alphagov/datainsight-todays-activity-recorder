@@ -19,7 +19,7 @@ get '/todays-activity' do
   yesterday = Hash[TodaysActivity.visitors_yesterday.map {|each| [each.start_at.hour, each.value]}]
   todays_activity = (0..23).map { |hour|
     result = {
-      :time => hour,
+      :hour_of_day => hour,
       :visitors => {
         :yesterday => yesterday[hour]
       }

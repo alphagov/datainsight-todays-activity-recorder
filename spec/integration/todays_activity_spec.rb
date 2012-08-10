@@ -17,15 +17,19 @@ describe("Today's activity") do
     last_response.should be_ok
     result = JSON.parse(last_response.body, :symbolize_names => true)
       .reject {|item| item[:visitors][:today].nil? }
-      .map {|item| [item[:time], item[:visitors][:today]] }
+      .map {|item| [item[:hour_of_day], item[:visitors][:today]] }
     result.should == TodaysActivity.visitors_today
       .map {|item| [item.start_at.hour, item.value]}
 
     result = JSON.parse(last_response.body, :symbolize_names => true)
     .reject {|item| item[:visitors][:yesterday].nil? }
-    .map {|item| [item[:time], item[:visitors][:yesterday]] }
+    .map {|item| [item[:hour_of_day], item[:visitors][:yesterday]] }
     result.should == TodaysActivity.visitors_yesterday
     .map {|item| [item.start_at.hour, item.value]}
+
+    hours = JSON.parse(last_response.body, :symbolize_names => true)
+      .map {|item| item[:hour_of_day]}
+    hours.should == (0..23).to_a
 
   end
 end

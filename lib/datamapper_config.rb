@@ -29,7 +29,7 @@ module DataMapperConfig
   end
 
   def self.configure_test
-    DataMapper.setup(:default, 'mysql://root:@localhost/datainsights_todays_activity_test')
+    DataMapper.setup(:default, 'mysql://datainsight:datainsight@localhost/datainsights_todays_activity_test')
     DataMapper.finalize
     DataMapper.auto_upgrade!
   end

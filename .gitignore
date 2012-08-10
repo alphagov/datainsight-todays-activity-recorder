@@ -2,3 +2,4 @@
 *.zip
 vendor
 Gemfile.local.rb
+spec/reports

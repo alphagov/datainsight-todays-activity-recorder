@@ -9,9 +9,11 @@ gem "dm-mysql-adapter", "1.2.0"
 gem "unicorn"
 
 group :test do
-  gem "dm-sqlite-adapter", "1.2.0"
   gem "rack-test"
   gem "rspec", "2.10.0"
   gem "ci_reporter"
   gem "factory_girl"
+  gem "autotest"
+  gem "autotest-growl"
+  gem "autotest-fsevent"
 end

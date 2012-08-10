@@ -10,7 +10,7 @@ class TodaysActivity
   def self.visitors_yesterday
     UniqueVisitors.all(
         :start_at.gte => Date.today - 1,
-        :end_at.lte => Date.today
+        :start_at.lt => Date.today
     )
   end
 

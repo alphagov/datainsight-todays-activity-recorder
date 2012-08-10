@@ -12,24 +12,23 @@ describe("Today's activity") do
   end
 
   it "should return JSON data" do
-    add_measurements(DateTime.now - 2, DateTime.now + 1)
+    now = DateTime.now
+    add_measurements(now - 2, now + 1)
     get '/todays-activity'
     last_response.should be_ok
-    result = JSON.parse(last_response.body, :symbolize_names => true)
-      .reject {|item| item[:visitors][:today].nil? }
-      .map {|item| [item[:hour_of_day], item[:visitors][:today]] }
-    result.should == TodaysActivity.visitors_today
-      .map {|item| [item.start_at.hour, item.value]}
+    response = JSON.parse(last_response.body, :symbolize_names => true)
 
-    result = JSON.parse(last_response.body, :symbolize_names => true)
-    .reject {|item| item[:visitors][:yesterday].nil? }
-    .map {|item| [item[:hour_of_day], item[:visitors][:yesterday]] }
-    result.should == TodaysActivity.visitors_yesterday
-    .map {|item| [item.start_at.hour, item.value]}
-
-    hours = JSON.parse(last_response.body, :symbolize_names => true)
-      .map {|item| item[:hour_of_day]}
+    hours = response.map {|item| item[:hour_of_day]}
     hours.should == (0..23).to_a
 
+    visitors_today = response.reject {|item| item[:visitors][:today].nil? }
+                             .map {|item| item[:visitors][:today] }
+    visitors_today.should == [500] * now.hour
+
+    visitors_yesterday = response.map {|item| item[:visitors][:yesterday] }
+    visitors_yesterday.should == [500] * 24
+
+    monthly_average = response.map {|item| item[:visitors][:monthly_average]}
+    monthly_average.should == [500] * 24
   end
 end

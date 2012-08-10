@@ -8,6 +8,7 @@ GEM
     addressable (2.2.8)
     autotest (4.4.6)
       ZenTest (>= 4.4.1)
+    autotest-growl (0.2.16)
     bcrypt-ruby (3.0.1)
     builder (3.0.0)
     bunny (0.8.0)
@@ -103,6 +104,7 @@ PLATFORMS
 
 DEPENDENCIES
   autotest
+  autotest-growl
   bunny
   ci_reporter
   data_mapper (= 1.2.0)

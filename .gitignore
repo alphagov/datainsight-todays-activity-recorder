@@ -1,3 +1,4 @@
 .bundle
 *.zip
 vendor
+Gemfile.local.rb

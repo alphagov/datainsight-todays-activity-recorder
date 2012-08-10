@@ -15,3 +15,8 @@ group :test do
   gem "factory_girl"
   gem "autotest"
 end
+
+local_gemfile = File.dirname(__FILE__) + "/Gemfile.local.rb"
+if File.file?(local_gemfile)
+  self.instance_eval(Bundler.read_file(local_gemfile))
+end

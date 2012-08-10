@@ -8,7 +8,7 @@ case $? in
   0)
     bundle package
     hash=$(git log --pretty=format:'%h' -n 1)
-    zip -x vendor/ruby/\* -x \*.zip -x tmp\* -x .git\* -r datainsight-todays-activity-recorder-$hash *
+    zip -x vendor/ruby/\* -x \*.zip -x tmp\* -x .git\* -x Gemfile.local.rb -r datainsight-todays-activity-recorder-$hash *
     echo $hash
   ;;
   1)

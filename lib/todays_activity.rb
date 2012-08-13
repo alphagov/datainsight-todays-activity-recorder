@@ -15,21 +15,16 @@ class TodaysActivity
   end
 
   def self.last_month_average
-    query = "" "
-      SELECT HOUR(start_at) as hour, AVG(value) as value
-      FROM unique_visitors
-      WHERE start_at >= '#{(Date.today-30).strftime}'
-      AND end_at < '#{Date.today.strftime}'
-      GROUP BY hour
-  " ""
+    result = UniqueVisitors.all(
+        :start_at.gte => (Date.today - 30).strftime,
+        :end_at.lt => Date.today.strftime
+    ).group_by { |each| each.start_at.hour }
+     .map { |hour, visitors| [hour, visitors.map(&:value).reduce(&:+) / visitors.length.to_f] }
 
-    result = DataMapper.repository.adapter.select(query)
-
-
-    result.map do |struct|
+    result.map do |hour, value|
       {
-          :hour => struct.hour,
-          :value => struct.value.round.to_i
+          :hour => hour,
+          :value => value.round.to_i
       }
     end
   end

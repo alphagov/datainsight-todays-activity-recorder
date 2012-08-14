@@ -23,7 +23,7 @@ module Recorders
     def run
       @queue.subscribe do |msg|
         @logger.debug("Received a message: #{msg}")
-        self.process_message(JSON.parse(msg[:payload], :symbolize_names => true))
+        TodaysActivityRecorder.process_message(JSON.parse(msg[:payload], :symbolize_names => true))
       end
     end
 

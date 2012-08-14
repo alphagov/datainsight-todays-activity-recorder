@@ -16,8 +16,8 @@ module Recorders
       @queue = client.queue(ENV['QUEUE'] || 'todays_activity')
       exchange = client.exchange('datainsight', :type => :topic)
 
-      @queue.bind(exchange, :key => 'google_analytics.unique_visitors.hourly')
-      @logger.info("Bound to google_analytics.unique_visitors.hourly, listening for events")
+      @queue.bind(exchange, :key => 'google_analytics.visitors.hourly')
+      @logger.info("Bound to google_analytics.visitors.hourly, listening for events")
     end
 
     def run

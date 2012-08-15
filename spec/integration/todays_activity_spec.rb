@@ -32,5 +32,6 @@ describe("Today's activity") do
     monthly_average.should == [500] * 24
 
     DateTime.parse(response[:live_at]).should be_an_instance_of(DateTime)
+    DateTime.parse(response[:live_at]).should be_within(Rational(1, 24)).of(DateTime.now)
   end
 end

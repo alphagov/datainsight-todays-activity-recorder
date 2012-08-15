@@ -34,6 +34,7 @@ module Recorders
         :site => msg[:payload][:site],
       )
       if unique_visitors
+        unique_visitors.collected_at = msg[:envelope][:collected_at]
         unique_visitors.value = msg[:payload][:value]
         unique_visitors.save
       else

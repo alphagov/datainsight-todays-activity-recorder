@@ -5,7 +5,7 @@ describe "TodaysActivityRecorder" do
   before(:each) do
     @message = {
       :envelope => {
-        :collector => "google_analytics.unique_visitors.hourly",
+        :collector => "Google Analytics",
         :collected_at => DateTime.now.strftime
       },
       :payload => {

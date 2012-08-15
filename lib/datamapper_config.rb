@@ -29,7 +29,8 @@ module DataMapperConfig
   end
 
   def self.configure_test
-    DataMapper.setup(:default, 'mysql://root:@localhost/datainsights_todays_activity_test')
+    ENV['TZ'] = DateTime.now.zone
+    DataMapper.setup(:default, 'sqlite::memory:')
     DataMapper.finalize
     DataMapper.auto_upgrade!
   end

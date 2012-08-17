@@ -8,24 +8,17 @@ require_relative "../lib/datamapper_config"
 DataMapperConfig.configure(:test)
 FactoryGirl.find_definitions
 
-def add_measurements(start_at, end_at, &block)
+def add_measurements(start_at, end_at)
   while start_at < end_at
-    FactoryGirl.create(:unique_visitors,
-                       start_at: start_at,
-                       end_at: start_at + Rational(1, 24),
-                       value: block ? block.call(start_at) : 500
-    )
 
+
+    params = {
+      start_at: start_at,
+      end_at: start_at + Rational(1, 24),
+      value: 500
+    }
+    yield(params) if block_given?
+    FactoryGirl.create(:unique_visitors, params)
     start_at += Rational(1, 24)
-  end
-end
-
-class DateTime
-  def to_midnight
-    to_full_hour(0)
-  end
-
-  def to_full_hour(hour)
-    DateTime.new(year, month, day, hour, 0, 0, zone)
   end
 end

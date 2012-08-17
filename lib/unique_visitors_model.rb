@@ -1,6 +1,7 @@
 require "dm-core"
 require "dm-timestamps"
 require "dm-validations"
+require "dm-aggregates"
 
 class UniqueVisitors
   include DataMapper::Resource

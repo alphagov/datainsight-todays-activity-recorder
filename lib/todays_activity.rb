@@ -1,31 +1,73 @@
+require_relative "date_extension"
+
 class TodaysActivity
-  def self.visitors_today
-    UniqueVisitors.all(
-        :start_at.gte => Date.today,
-        :end_at.lte => DateTime.now,
-        :site => "govuk"
-    )
+
+
+  def todays_activity
+    live_at = self.live_at
+
+
+    visitors_today = visitors_today_by_hour(live_at)
+    visitors_yesterday = visitors_yesterday_by_hour(live_at)
+    last_month_average = last_month_average_by_hour(live_at)
+
+    values = 24.times.map do |hour|
+      result = {:hour_of_day => hour, :visitors => {}}
+      result[:visitors][:today] = visitors_today[hour] if hour < visitors_today.length
+      result[:visitors][:yesterday] = visitors_yesterday[hour]
+      result[:visitors][:monthly_average] =last_month_average[hour]
+
+      result
+    end
+
+    {
+      :values => values,
+      :live_at => live_at
+    }
   end
 
-  def self.visitors_yesterday
-    UniqueVisitors.all(
-        :start_at.gte => Date.today - 1,
-        :start_at.lt => Date.today
-    )
+  def live_at
+    UniqueVisitors.max(:collected_at)
   end
 
-  def self.last_month_average
+  def visitors_today_by_hour(live_at)
     result = UniqueVisitors.all(
-        :start_at.gte => (Date.today - 30).strftime,
-        :end_at.lt => Date.today.strftime
-    ).group_by { |each| each.start_at.hour }
-     .map { |hour, visitors| [hour, visitors.map(&:value).reduce(&:+) / visitors.length.to_f] }
+      :start_at.gte => live_at.to_midnight,
+      :end_at.lte => live_at,
+      :site => "govuk"
+    )
+    visitors = []
+    result.each {|measurement| visitors[measurement.start_at.hour] = measurement.value }
+    visitors
+  end
 
-    result.map do |hour, value|
-      {
-          :hour => hour,
-          :value => value.round.to_i
-      }
+  def visitors_yesterday_by_hour(live_at)
+    result = UniqueVisitors.all(
+      :start_at.gte => live_at.to_midnight - 1,
+      :start_at.lt => live_at.to_midnight
+    )
+    visitors = [nil] * 24
+    result.each {|measurement| visitors[measurement.start_at.hour] = measurement.value }
+    visitors
+  end
+
+  def last_month_average_by_hour(live_at)
+    result = UniqueVisitors.all(
+      :start_at.gte => (live_at.to_midnight - 30),
+      :end_at.lt => live_at.to_midnight
+    ).group_by { |each| each.start_at.hour }.map { |hour, visitors| [hour, average(visitors)] }
+    visitors = [nil] * 24
+    result.each {|hour, avg| visitors[hour] = avg}
+
+    visitors
+  end
+
+  def average unique_visitors
+    if unique_visitors.empty?
+      0.0
+    else
+      values = unique_visitors.map(&:value)
+      values.reduce(&:+).to_f / values.length
     end
   end
 end

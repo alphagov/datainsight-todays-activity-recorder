@@ -10,8 +10,6 @@ FactoryGirl.find_definitions
 
 def add_measurements(start_at, end_at)
   while start_at < end_at
-
-
     params = {
       start_at: start_at,
       end_at: start_at + Rational(1, 24),

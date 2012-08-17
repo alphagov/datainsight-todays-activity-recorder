@@ -23,7 +23,10 @@ describe("Today's activity") do
 
     visitors_today = response[:values].reject {|item| item[:visitors][:today].nil? }
                              .map {|item| item[:visitors][:today] }
-    visitors_today.should == [500] * now.hour
+    # this test can be time sensitive so the expectation has been relaxed.
+    # for a detailed test see the unit tests for TodaysActivity.
+    visitors_today.all?{|value| value == 500}
+    visitors_today.length.should be_within(1).of(now.hour)
 
     visitors_yesterday = response[:values].map {|item| item[:visitors][:yesterday] }
     visitors_yesterday.should == [500] * 24

@@ -11,7 +11,6 @@ class UniqueVisitors
   property :collected_at, DateTime # When this measurement was collected
   property :updated_at, DateTime # When this measurement was last saved to the database
 
-  property :site, String
   property :start_at, DateTime
   property :end_at, DateTime
   property :value, Integer

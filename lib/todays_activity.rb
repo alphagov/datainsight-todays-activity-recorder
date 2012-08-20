@@ -33,8 +33,7 @@ class TodaysActivity
   def visitors_today_by_hour(live_at)
     result = UniqueVisitors.all(
       :start_at.gte => live_at.to_midnight,
-      :end_at.lte => live_at,
-      :site => "govuk"
+      :end_at.lte => live_at
     )
     visitors = []
     result.each {|measurement| visitors[measurement.start_at.hour] = measurement.value }

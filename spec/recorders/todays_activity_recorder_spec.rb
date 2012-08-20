@@ -32,7 +32,6 @@ describe "TodaysActivityRecorder" do
     unique_visitors.start_at.should == DateTime.new(2012, 8, 6, 10, 0, 0, DateTime.now.zone)
     unique_visitors.end_at.should == DateTime.new(2012, 8, 6, 11, 0, 0, DateTime.now.zone)
     unique_visitors.value.should == 500
-    unique_visitors.site.should == "govuk"
     unique_visitors.collected_at.should be_within(a_minute).of(yesterday)
     unique_visitors.created_at.should be_within(a_minute).of(DateTime.now)
     unique_visitors.updated_at.should be_within(a_minute).of(DateTime.now)
@@ -50,7 +49,7 @@ describe "TodaysActivityRecorder" do
     visitors.collected_at.should be_within(a_minute).of(DateTime.now)
   end
 
-  it "should raise an error on invalid payload" do
+  it "should raise an error if model is invalid" do
     @message[:payload][:start_at] = "2012-08-06T10:30+00:00"
 
     lambda do

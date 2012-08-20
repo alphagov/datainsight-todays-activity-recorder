@@ -34,8 +34,7 @@ module Recorders
     def self.process_message(msg)
       unique_visitors = UniqueVisitors.first(
           :start_at => DateTime.parse(msg[:payload][:start_at]),
-          :end_at => DateTime.parse(msg[:payload][:end_at]),
-          :site => msg[:payload][:site],
+          :end_at => DateTime.parse(msg[:payload][:end_at])
       )
       if unique_visitors
         unique_visitors.collected_at = msg[:envelope][:collected_at]
@@ -46,8 +45,7 @@ module Recorders
             :collected_at => DateTime.parse(msg[:envelope][:collected_at]),
             :start_at => DateTime.parse(msg[:payload][:start_at]),
             :end_at => DateTime.parse(msg[:payload][:end_at]),
-            :value => msg[:payload][:value],
-            :site => msg[:payload][:site],
+            :value => msg[:payload][:value]
         )
       end
     end

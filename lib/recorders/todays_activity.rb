@@ -22,16 +22,20 @@ module Recorders
 
     def run
       @queue.subscribe do |msg|
-        @logger.debug("Received a message: #{msg}")
-        TodaysActivityRecorder.process_message(JSON.parse(msg[:payload], :symbolize_names => true))
+        begin
+          @logger.debug("Received a message: #{msg}")
+          TodaysActivityRecorder.process_message(JSON.parse(msg[:payload], :symbolize_names => true))
+        rescue Exception => e
+          @logger.error("#{e} \n" + e.backtrace.join("\n"))
+        end
       end
     end
 
     def self.process_message(msg)
       unique_visitors = UniqueVisitors.first(
-        :start_at => DateTime.parse(msg[:payload][:start_at]),
-        :end_at => DateTime.parse(msg[:payload][:end_at]),
-        :site => msg[:payload][:site],
+          :start_at => DateTime.parse(msg[:payload][:start_at]),
+          :end_at => DateTime.parse(msg[:payload][:end_at]),
+          :site => msg[:payload][:site],
       )
       if unique_visitors
         unique_visitors.collected_at = msg[:envelope][:collected_at]
@@ -39,11 +43,11 @@ module Recorders
         unique_visitors.save
       else
         UniqueVisitors.create(
-          :collected_at => DateTime.parse(msg[:envelope][:collected_at]),
-          :start_at => DateTime.parse(msg[:payload][:start_at]),
-          :end_at => DateTime.parse(msg[:payload][:end_at]),
-          :value => msg[:payload][:value],
-          :site => msg[:payload][:site],
+            :collected_at => DateTime.parse(msg[:envelope][:collected_at]),
+            :start_at => DateTime.parse(msg[:payload][:start_at]),
+            :end_at => DateTime.parse(msg[:payload][:end_at]),
+            :value => msg[:payload][:value],
+            :site => msg[:payload][:site],
         )
       end
     end

@@ -180,4 +180,42 @@ describe "TodaysActivity" do
       unique_visitors.should_not be_valid
     end
   end
+
+  describe "field validation" do
+    it "should be invalid if value is null" do
+      unique_visitors = FactoryGirl.build(:unique_visitors, :value => nil)
+
+      unique_visitors.should_not be_valid
+    end
+
+    it "should be invalid if value is negative" do
+      unique_visitors = FactoryGirl.build(:unique_visitors, :value => -1)
+
+      unique_visitors.should_not be_valid
+    end
+
+    it "should be valid if value is zero" do
+      unique_visitors = FactoryGirl.build(:unique_visitors, :value => 0)
+
+      unique_visitors.should be_valid
+    end
+
+    it "should have a non-null start_at" do
+      unique_visitors = FactoryGirl.build(:unique_visitors, :start_at => nil)
+
+      unique_visitors.should_not be_valid
+    end
+
+    it "should have a non-null end_at" do
+      unique_visitors = FactoryGirl.build(:unique_visitors, :end_at => nil)
+
+      unique_visitors.should_not be_valid
+    end
+
+    it "should have a non-null collected_at" do
+      unique_visitors = FactoryGirl.build(:unique_visitors, :collected_at => nil)
+
+      unique_visitors.should_not be_valid
+    end
+  end
 end

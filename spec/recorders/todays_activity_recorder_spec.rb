@@ -12,8 +12,8 @@ describe "TodaysActivityRecorder" do
         :collected_at => yesterday.strftime
       },
       :payload => {
-        :start_at => "2012-08-06 10:00:00",
-        :end_at => "2012-08-06 11:00:00",
+        :start_at => "2012-08-06T10:00:00+00:00",
+        :end_at => "2012-08-06T11:00:00+00:00",
         :value => 500,
         :site => "govuk"
       }
@@ -48,5 +48,13 @@ describe "TodaysActivityRecorder" do
     visitors = UniqueVisitors.first
     visitors.value.should == 900
     visitors.collected_at.should be_within(a_minute).of(DateTime.now)
+  end
+
+  it "should raise an error on invalid payload" do
+    @message[:payload][:start_at] = "2012-08-06T10:30+00:00"
+
+    lambda do
+      Recorders::TodaysActivityRecorder.process_message(@message)
+    end.should raise_error
   end
 end

@@ -49,11 +49,37 @@ describe "TodaysActivityRecorder" do
     visitors.collected_at.should be_within(a_minute).of(DateTime.now)
   end
 
-  it "should raise an error if model is invalid" do
-    @message[:payload][:start_at] = "2012-08-06T10:30+00:00"
+  describe "validation" do
+    it "should raise an error if model is invalid" do
+      @message[:payload][:start_at] = "2012-08-06T10:30+00:00"
 
-    lambda do
-      Recorders::TodaysActivityRecorder.process_message(@message)
-    end.should raise_error
+      lambda do
+        Recorders::TodaysActivityRecorder.process_message(@message)
+      end.should raise_error
+    end
+
+    it "should fail if value is not present" do
+      @message[:payload].delete(:value)
+
+      lambda do
+        Recorders::TodaysActivityRecorder.process_message(@message)
+      end.should raise_error
+    end
+
+    it "should fail if value cannot be parsed as a integer" do
+      @message[:payload][:value] = "invalid"
+
+      lambda do
+        Recorders::TodaysActivityRecorder.process_message(@message)
+      end.should raise_error
+    end
+
+    it "should not allow nil as a value" do
+      @message[:payload][:value] = nil
+
+      lambda do
+        Recorders::TodaysActivityRecorder.process_message(@message)
+      end.should raise_error
+    end
   end
 end

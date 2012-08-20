@@ -31,23 +31,31 @@ module Recorders
       end
     end
 
-    def self.process_message(msg)
+    def self.process_message(message)
+      validate_message_value(message)
       unique_visitors = UniqueVisitors.first(
-          :start_at => DateTime.parse(msg[:payload][:start_at]),
-          :end_at => DateTime.parse(msg[:payload][:end_at])
+          :start_at => DateTime.parse(message[:payload][:start_at]),
+          :end_at => DateTime.parse(message[:payload][:end_at])
       )
       if unique_visitors
-        unique_visitors.collected_at = msg[:envelope][:collected_at]
-        unique_visitors.value = msg[:payload][:value]
-        unique_visitors.save
+        unique_visitors.update(
+          collected_at: message[:envelope][:collected_at],
+          value: message[:payload][:value]
+        )
       else
         UniqueVisitors.create(
-            :collected_at => DateTime.parse(msg[:envelope][:collected_at]),
-            :start_at => DateTime.parse(msg[:payload][:start_at]),
-            :end_at => DateTime.parse(msg[:payload][:end_at]),
-            :value => msg[:payload][:value]
+            :collected_at => DateTime.parse(message[:envelope][:collected_at]),
+            :start_at => DateTime.parse(message[:payload][:start_at]),
+            :end_at => DateTime.parse(message[:payload][:end_at]),
+            :value => message[:payload][:value]
         )
       end
+    end
+
+    private
+    def self.validate_message_value(message)
+      raise "No value provided in message payload: #{message.inspect}" unless message[:payload].has_key? :value
+      raise "Invalid value provided in message payload: #{message.inspect}" unless message[:payload][:value].is_a? Integer
     end
   end
 end

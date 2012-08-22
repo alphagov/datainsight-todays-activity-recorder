@@ -124,6 +124,14 @@ describe "TodaysActivity" do
         activity.should have(24).items
         activity.should == [400] * 24
       end
+
+      it "should last hour of yesterday in monthly average" do
+        @todays_activity.stub(:average) {|ms| ms.length}
+
+        activity = @todays_activity.last_month_average_by_hour(@two_hours_ago)
+        activity.should have(24).items
+        activity.should == [30] * 24
+      end
     end
   end
 

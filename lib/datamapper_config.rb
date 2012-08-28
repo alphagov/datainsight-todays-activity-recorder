@@ -3,8 +3,9 @@ require 'dm-migrations'
 
 module DataMapperConfig
   def self.configure(env=ENV["RACK_ENV"])
+    DataMapper.logger = Logging.logger[DataMapper]
     case (env or "default").to_sym
-      when :test
+    when :test
         DataMapperConfig.configure_test
       when :production
         DataMapperConfig.configure_production
@@ -17,7 +18,6 @@ module DataMapperConfig
   private
 
   def self.configure_development
-    DataMapper::Logger.new($stdout, :debug)
     DataMapper.setup(:default, 'mysql://root:@localhost/datainsights_todays_activity')
     DataMapper.finalize
     DataMapper.auto_upgrade!

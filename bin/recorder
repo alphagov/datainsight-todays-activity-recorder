@@ -2,7 +2,7 @@
 
 require 'rubygems'
 require 'gli'
-require 'logger'
+require 'datainsight_logging'
 
 require_relative '../lib/recorders/todays_activity'
 require_relative '../lib/datamapper_config'
@@ -13,14 +13,16 @@ program_desc 'Stuff'
 
 version 0.1
 
-logger = Logger.new(STDOUT)
-logger.level = Logger::INFO
+arg_name 'Enable development logging'
+switch [:v, :dev]
 
 desc 'Listen for messages'
 command :run do |c|
   c.action do |global_options, options, args|
+    env = global_options[:dev] ? :development : :production
+    Datainsight::Logging.configure(:type => :recorder, :env => env)
     DataMapperConfig.configure
-    Recorders::TodaysActivityRecorder.new(logger).run
+    Recorders::TodaysActivityRecorder.new.run
   end
 end
 

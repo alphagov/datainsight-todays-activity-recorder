@@ -5,7 +5,7 @@ require "factory_girl"
 require_relative "../lib/unique_visitors_model"
 require_relative "../lib/datamapper_config"
 
-DataMapperConfig.configure(:test)
+DataMapperConfig.configure(:env => :test)
 FactoryGirl.find_definitions
 
 def add_measurements(start_at, end_at)

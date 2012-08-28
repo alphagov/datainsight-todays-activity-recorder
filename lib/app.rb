@@ -13,7 +13,7 @@ helpers Datainsight::Logging::Helpers
 configure do
   enable :logging
   unless test?
-    Datainsight::Logging.configure
+    Datainsight::Logging.configure(:env => :exposer)
     DataMapperConfig.configure
   end
 end

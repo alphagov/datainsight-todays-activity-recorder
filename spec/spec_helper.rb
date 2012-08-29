@@ -1,5 +1,5 @@
-require 'rspec'
-require 'datainsight_logging'
+require 'bundler/setup'
+Bundler.require
 
 ENV['RACK_ENV'] = "test"
 require "factory_girl"

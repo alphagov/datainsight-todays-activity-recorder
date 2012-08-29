@@ -1,7 +1,3 @@
-require 'bundler/setup'
-Bundler.require
-
-require 'bunny'
 require 'json'
 
 require_relative '../unique_visitors_model'

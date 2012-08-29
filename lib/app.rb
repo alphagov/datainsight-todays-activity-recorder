@@ -1,8 +1,7 @@
 require "bundler/setup"
+Bundler.require(:default, :exposer)
 
-require 'sinatra'
 require 'json'
-require 'datainsight_logging'
 
 require_relative "unique_visitors_model"
 require_relative "todays_activity"

@@ -1,11 +1,9 @@
 #!/usr/bin/env ruby
+require 'bundler/setup'
+Bundler.require(:default, :recorder)
 
-require 'rubygems'
-require 'gli'
-require 'datainsight_logging'
-
+require_relative '../../lib/datamapper_config'
 require_relative '../lib/recorders/todays_activity'
-require_relative '../lib/datamapper_config'
 
 include GLI
 

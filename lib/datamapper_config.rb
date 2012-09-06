@@ -24,7 +24,7 @@ module DataMapperConfig
   end
 
   def self.configure_production
-    DataMapper.setup(:default, 'mysql://root:@localhost/datainsights_todays_activity')
+    DataMapper.setup(:default, 'mysql://datainsight:@localhost/datainsights_todays_activity')
     DataMapper.finalize
     DataMapper.auto_upgrade!
   end

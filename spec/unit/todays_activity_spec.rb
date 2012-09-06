@@ -226,4 +226,12 @@ describe "TodaysActivity" do
       unique_visitors.should_not be_valid
     end
   end
+
+  describe "no data" do
+    it "should return UTC 1970-01-01 midnight as live at date" do
+      @todays_activity = TodaysActivity.new
+
+      @todays_activity.live_at.should eql DateTime.parse("1970-01-01T00:00:00+00:00")
+    end
+  end
 end

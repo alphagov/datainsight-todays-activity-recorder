@@ -27,7 +27,7 @@ class TodaysActivity
   end
 
   def live_at
-    UniqueVisitors.max(:collected_at)
+    UniqueVisitors.max(:collected_at) || DateTime.parse("1970-01-01T00:00:00+00:00")
   end
 
   def visitors_today_by_hour(live_at)

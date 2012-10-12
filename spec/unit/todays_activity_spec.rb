@@ -8,6 +8,7 @@ describe "TodaysActivity" do
   before(:each) do
     @two_hours_ago = DateTime.new(2012, 8, 16, 9, 50, 0)
     @now = DateTime.new(2012, 8, 16, 11, 50, 0)
+    @yesterday = (@two_hours_ago - 1).to_date
 
     @todays_activity = TodaysActivity.new
   end
@@ -19,38 +20,36 @@ describe "TodaysActivity" do
   describe "todays activity" do
     it "should assemble the result" do
       @todays_activity.stub(:live_at).and_return(@two_hours_ago)
-      @todays_activity.stub(:visitors_today_by_hour).and_return([200, 200, 200, 200, nil, 200, 200])
       @todays_activity.stub(:visitors_yesterday_by_hour).and_return([100]*24)
-      @todays_activity.stub(:last_month_average_by_hour).and_return([300]*24)
+      @todays_activity.stub(:last_week_average_by_hour).and_return([300]*24)
 
       activity = @todays_activity.todays_activity
       activity[:live_at].should == @two_hours_ago
+      activity[:for_date].should == @yesterday
       activity[:values].should have(24).items
       activity[:values][0].should == {
         :hour_of_day => 0,
         :visitors => {
-          :today => 200,
           :yesterday => 100,
-          :monthly_average => 300
+          :last_week_average => 300
         }}
       activity[:values][4].should == {
         :hour_of_day => 4,
         :visitors => {
-          :today => nil,
           :yesterday => 100,
-          :monthly_average => 300
+          :last_week_average => 300
         }}
       activity[:values][7].should == {
         :hour_of_day => 7,
         :visitors => {
           :yesterday => 100,
-          :monthly_average => 300
+          :last_week_average => 300
         }}
       activity[:values][23].should == {
         :hour_of_day => 23,
         :visitors => {
           :yesterday => 100,
-          :monthly_average => 300
+          :last_week_average => 300
         }}
     end
   end
@@ -76,34 +75,6 @@ describe "TodaysActivity" do
       end
     end
 
-    describe "todays visitors" do
-
-      it "should return todays visitors" do
-
-        activity = @todays_activity.visitors_today_by_hour(@two_hours_ago)
-
-        activity.should have(9).items
-        activity.should be_a(Array)
-        activity.should == [500]*9
-      end
-
-      it "should return todays visitors" do
-        UniqueVisitors.all(
-          :start_at.gte => (@two_hours_ago- Rational(7, 24)),
-          :end_at.lte => (@two_hours_ago- Rational(3, 24))
-        ).destroy!
-
-        activity = @todays_activity.visitors_today_by_hour(@two_hours_ago)
-
-        activity.should have(9).items
-        activity.should be_a(Array)
-        activity.should == [500, 500, 500, nil,nil,nil, 500, 500, 500]
-      end
-
-
-    end
-
-
     describe "yesterdays visitors" do
 
       it "should return yesterdays visitors" do
@@ -125,12 +96,31 @@ describe "TodaysActivity" do
         activity.should == [400] * 24
       end
 
-      it "should last hour of yesterday in monthly average" do
+      it "should include last hour of yesterday in monthly average" do
         @todays_activity.stub(:average) {|ms| ms.length}
 
         activity = @todays_activity.last_month_average_by_hour(@two_hours_ago)
         activity.should have(24).items
         activity.should == [30] * 24
+      end
+    end
+
+    describe "weekly average" do
+      it "should return weekly average" do
+        @todays_activity.stub(:average).and_return(400)
+
+        activity = @todays_activity.last_week_average_by_hour(@two_hours_ago)
+        activity.should have(24).items
+        activity.should == [400] * 24
+      end
+
+      it "should include last hour of previous Saturday in weekly average" do
+        @todays_activity.stub(:average) {|ms| ms.length}
+
+        activity = @todays_activity.last_week_average_by_hour(@two_hours_ago)
+        activity.should have(24).items
+        activity.should == [7] * 24
+
       end
     end
   end

@@ -13,7 +13,7 @@ describe("Today's activity") do
 
   it "should return JSON data" do
     now = DateTime.now
-    add_measurements(now - 2, now + 1)
+    add_measurements(now - 10, now + 1)
     get '/todays-activity'
     last_response.should be_ok
     response = JSON.parse(last_response.body, :symbolize_names => true)
@@ -21,20 +21,16 @@ describe("Today's activity") do
     hours = response[:values].map {|item| item[:hour_of_day]}
     hours.should == (0..23).to_a
 
-    visitors_today = response[:values].reject {|item| item[:visitors][:today].nil? }
-                             .map {|item| item[:visitors][:today] }
-    # this test can be time sensitive so the expectation has been relaxed.
-    # for a detailed test see the unit tests for TodaysActivity.
-    visitors_today.all?{|value| value == 500}
-    visitors_today.length.should be_within(1).of(now.hour)
-
     visitors_yesterday = response[:values].map {|item| item[:visitors][:yesterday] }
     visitors_yesterday.should == [500] * 24
 
-    monthly_average = response[:values].map {|item| item[:visitors][:monthly_average]}
-    monthly_average.should == [500] * 24
+    last_week_average = response[:values].map {|item| item[:visitors][:last_week_average]}
+    last_week_average.should == [500] * 24
 
     DateTime.parse(response[:live_at]).should be_an_instance_of(DateTime)
     DateTime.parse(response[:live_at]).should be_within(Rational(1, 24)).of(DateTime.now)
+
+    Date.parse(response[:for_date]).should be_an_instance_of(Date)
+    Date.parse(response[:for_date]).should == Date.today - 1
   end
 end

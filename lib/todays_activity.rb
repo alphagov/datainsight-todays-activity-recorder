@@ -7,37 +7,26 @@ class TodaysActivity
     live_at = self.live_at
 
 
-    visitors_today = visitors_today_by_hour(live_at)
     visitors_yesterday = visitors_yesterday_by_hour(live_at)
-    last_month_average = last_month_average_by_hour(live_at)
+    last_week_average = last_week_average_by_hour(live_at)
 
     values = 24.times.map do |hour|
       result = {:hour_of_day => hour, :visitors => {}}
-      result[:visitors][:today] = visitors_today[hour] if hour < visitors_today.length
       result[:visitors][:yesterday] = visitors_yesterday[hour]
-      result[:visitors][:monthly_average] =last_month_average[hour]
+      result[:visitors][:last_week_average] =last_week_average[hour]
 
       result
     end
 
     {
       :values => values,
-      :live_at => live_at
+      :live_at => live_at,
+      :for_date => (live_at - 1).to_date
     }
   end
 
   def live_at
     UniqueVisitors.max(:collected_at) || DateTime.parse("1970-01-01T00:00:00+00:00")
-  end
-
-  def visitors_today_by_hour(live_at)
-    result = UniqueVisitors.all(
-      :start_at.gte => live_at.to_midnight,
-      :end_at.lte => live_at
-    )
-    visitors = []
-    result.each {|measurement| visitors[measurement.start_at.hour] = measurement.value }
-    visitors
   end
 
   def visitors_yesterday_by_hour(live_at)
@@ -54,6 +43,17 @@ class TodaysActivity
     result = UniqueVisitors.all(
       :start_at.gte => (live_at.to_midnight - 30),
       :end_at.lte => live_at.to_midnight
+    ).group_by { |each| each.start_at.hour }.map { |hour, visitors| [hour, average(visitors)] }
+    visitors = [nil] * 24
+    result.each {|hour, avg| visitors[hour] = avg}
+
+    visitors
+  end
+
+  def last_week_average_by_hour(live_at)
+    result = UniqueVisitors.all(
+      :start_at.gte => (live_at - live_at.wday).to_midnight - 7,
+      :end_at.lte => (live_at - live_at.wday).to_midnight
     ).group_by { |each| each.start_at.hour }.map { |hour, visitors| [hour, average(visitors)] }
     visitors = [nil] * 24
     result.each {|hour, avg| visitors[hour] = avg}

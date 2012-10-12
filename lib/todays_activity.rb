@@ -39,17 +39,6 @@ class TodaysActivity
     visitors
   end
 
-  def last_month_average_by_hour(live_at)
-    result = UniqueVisitors.all(
-      :start_at.gte => (live_at.to_midnight - 30),
-      :end_at.lte => live_at.to_midnight
-    ).group_by { |each| each.start_at.hour }.map { |hour, visitors| [hour, average(visitors)] }
-    visitors = [nil] * 24
-    result.each {|hour, avg| visitors[hour] = avg}
-
-    visitors
-  end
-
   def last_week_average_by_hour(live_at)
     result = UniqueVisitors.all(
       :start_at.gte => (live_at - live_at.wday).to_midnight - 7,

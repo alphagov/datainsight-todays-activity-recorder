@@ -85,26 +85,6 @@ describe "TodaysActivity" do
       end
     end
 
-    describe "monthly average" do
-
-
-      it "should return monthly average" do
-        @todays_activity.stub(:average).and_return(400)
-
-        activity = @todays_activity.last_month_average_by_hour(@two_hours_ago)
-        activity.should have(24).items
-        activity.should == [400] * 24
-      end
-
-      it "should include last hour of yesterday in monthly average" do
-        @todays_activity.stub(:average) {|ms| ms.length}
-
-        activity = @todays_activity.last_month_average_by_hour(@two_hours_ago)
-        activity.should have(24).items
-        activity.should == [30] * 24
-      end
-    end
-
     describe "weekly average" do
       it "should return weekly average" do
         @todays_activity.stub(:average).and_return(400)

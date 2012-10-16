@@ -5,12 +5,12 @@ describe "VisitorsNarrative" do
 
   it "should display correct narrative if there is a > 1% increase in visitors" do
     narrative = VisitorsNarrative.new(1200000,1000000)
-    narrative.message.should == "GOV.UK had 1.2 million visitors yesterday, an increase of 20% from the day before"
+    narrative.message.should == "GOV.UK had 1.2 million visitors yesterday, <green>an increase of 20%</green> from the day before"
   end
 
   it "should display correct narrative if there is a > 1% decrease in visitors" do
     narrative = VisitorsNarrative.new(1000000,1200000)
-    narrative.message.should == "GOV.UK had 1 million visitors yesterday, a decrease of 17% from the day before"
+    narrative.message.should == "GOV.UK had 1 million visitors yesterday, <red>a decrease of 17%</red> from the day before"
   end
 
   it "should display correct narrative if there is a < 1% change in visitors" do
@@ -45,13 +45,13 @@ describe "VisitorsMetric" do
     end
   end
 
-  describe "change" do
-    it "should return 'increase' if the number of visitors has increased" do
-      VisitorsMetric.new(100, 10).change.should == "an increase"
+  describe "is_increase?" do
+    it "should return true if the number of visitors has increased" do
+      VisitorsMetric.new(100, 10).is_increase?.should be_true
     end
 
-    it "should return 'decrease' if the number of visitors has decrease" do
-      VisitorsMetric.new(10, 100).change.should == "a decrease"
+    it "should return false if the number of visitors has decreased" do
+      VisitorsMetric.new(10, 100).is_increase?.should be_false
     end
   end
 end

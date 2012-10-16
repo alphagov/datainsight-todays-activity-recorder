@@ -6,8 +6,10 @@ class VisitorsNarrative
   def message
     if @metric.delta == 0
       "GOV.UK had #{@metric.yesterday} visitors yesterday, about the same as the day before"
+    elsif @metric.is_increase?
+      "GOV.UK had #{@metric.yesterday} visitors yesterday, <green>an increase of #{@metric.delta}%</green> from the day before"
     else
-      "GOV.UK had #{@metric.yesterday} visitors yesterday, #{@metric.change} of #{@metric.delta}% from the day before"
+      "GOV.UK had #{@metric.yesterday} visitors yesterday, <red>a decrease of #{@metric.delta}%</red> from the day before"
     end
   end
 end
@@ -32,11 +34,7 @@ class VisitorsMetric
     end
   end
 
-  def change
-    if @yesterday > @the_day_before
-      "an increase"
-    else
-      "a decrease"
-    end
+  def is_increase?
+    @yesterday > @the_day_before
   end
 end

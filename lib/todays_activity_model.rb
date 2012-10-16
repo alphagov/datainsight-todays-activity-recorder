@@ -1,6 +1,6 @@
 require_relative "date_extension"
 
-class TodaysActivity
+class TodaysActivityModel
 
 
   def todays_activity

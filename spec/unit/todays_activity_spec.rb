@@ -1,16 +1,16 @@
 require "date"
 
 require_relative "../spec_helper"
-require_relative "../../lib/todays_activity"
+require_relative "../../lib/todays_activity_model"
 
-describe "TodaysActivity" do
+describe "TodaysActivityModel" do
 
   before(:each) do
     @two_hours_ago = DateTime.new(2012, 8, 16, 9, 50, 0)
     @now = DateTime.new(2012, 8, 16, 11, 50, 0)
     @yesterday = (@two_hours_ago - 1).to_date
 
-    @todays_activity = TodaysActivity.new
+    @todays_activity = TodaysActivityModel.new
   end
 
   after(:each) do
@@ -199,7 +199,7 @@ describe "TodaysActivity" do
 
   describe "no data" do
     it "should return UTC 1970-01-01 midnight as live at date" do
-      @todays_activity = TodaysActivity.new
+      @todays_activity = TodaysActivityModel.new
 
       @todays_activity.live_at.should eql DateTime.parse("1970-01-01T00:00:00+00:00")
     end

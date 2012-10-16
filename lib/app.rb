@@ -4,7 +4,9 @@ Bundler.require(:default, :exposer)
 require 'json'
 
 require_relative "unique_visitors_model"
-require_relative "todays_activity"
+require_relative "todays_activity_model"
+require_relative "daily_visitors_model"
+require_relative "visitors_narrative"
 require_relative "datamapper_config"
 
 helpers Datainsight::Logging::Helpers
@@ -23,7 +25,19 @@ end
 
 get '/todays-activity' do
   content_type :json
-  TodaysActivity.new.todays_activity.to_json
+  TodaysActivityModel.new.todays_activity.to_json
+end
+
+get '/narrative' do
+  content_type :json
+  daily_visitors = DailyVisitorsModel.new
+  narrative = VisitorsNarrative.new(
+    daily_visitors.visitors_for(Date.today - 1),
+    daily_visitors.visitors_for(Date.today - 2)
+  )
+  {
+    :content => narrative.message
+  }.to_json
 end
 
 error do

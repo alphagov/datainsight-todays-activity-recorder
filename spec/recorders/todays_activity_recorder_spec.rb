@@ -20,6 +20,10 @@ describe "TodaysActivityRecorder" do
     }
   end
 
+  before(:each) do
+    UniqueVisitors.destroy!
+  end
+
   after(:each) do
     UniqueVisitors.destroy!
   end

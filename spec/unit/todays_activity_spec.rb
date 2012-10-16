@@ -13,6 +13,10 @@ describe "TodaysActivityModel" do
     @todays_activity = TodaysActivityModel.new
   end
 
+  before(:each) do
+    UniqueVisitors.destroy!
+  end
+
   after(:each) do
     UniqueVisitors.destroy!
   end

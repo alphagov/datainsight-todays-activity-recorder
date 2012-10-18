@@ -35,14 +35,14 @@ module Recorders
       if unique_visitors
         unique_visitors.update(
             collected_at: message[:envelope][:collected_at],
-            value: message[:payload][:value]
+            value: message[:payload][:value][:visitors]
         )
       else
         UniqueVisitors.create(
             :collected_at => DateTime.parse(message[:envelope][:collected_at]),
             :start_at => DateTime.parse(message[:payload][:start_at]),
             :end_at => DateTime.parse(message[:payload][:end_at]),
-            :value => message[:payload][:value]
+            :value => message[:payload][:value][:visitors]
         )
       end
     end
@@ -50,7 +50,8 @@ module Recorders
     private
     def self.validate_message_value(message)
       raise "No value provided in message payload: #{message.inspect}" unless message[:payload].has_key? :value
-      raise "Invalid value provided in message payload: #{message.inspect}" unless message[:payload][:value].is_a? Integer
+      raise "No visitors provided in message value: #{message.inspect}" unless message[:payload][:value].has_key? :visitors
+      raise "Invalid value provided in message payload: #{message.inspect}" unless message[:payload][:value][:visitors].is_a? Integer
     end
   end
 end

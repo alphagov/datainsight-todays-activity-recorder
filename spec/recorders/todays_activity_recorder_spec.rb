@@ -14,8 +14,10 @@ describe "TodaysActivityRecorder" do
       :payload => {
         :start_at => "2012-08-06T10:00:00+00:00",
         :end_at => "2012-08-06T11:00:00+00:00",
-        :value => 500,
-        :site => "govuk"
+        :value => {
+          :visitors => 500,
+          :site => "govuk"
+        }
       }
     }
   end
@@ -43,7 +45,7 @@ describe "TodaysActivityRecorder" do
 
   it "should update existing measurements" do
     Recorders::TodaysActivityRecorder.process_message(@message)
-    @message[:payload][:value] = 900
+    @message[:payload][:value][:visitors] = 900
     @message[:envelope][:collected_at] = DateTime.now.strftime
     Recorders::TodaysActivityRecorder.process_message(@message)
     UniqueVisitors.all.length.should == 1

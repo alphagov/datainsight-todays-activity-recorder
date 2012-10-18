@@ -26,11 +26,11 @@ class TodaysActivityModel
   end
 
   def live_at
-    UniqueVisitors.max(:collected_at) || DateTime.parse("1970-01-01T00:00:00+00:00")
+    HourlyUniqueVisitors.max(:collected_at) || DateTime.parse("1970-01-01T00:00:00+00:00")
   end
 
   def visitors_yesterday_by_hour(live_at)
-    result = UniqueVisitors.all(
+    result = HourlyUniqueVisitors.all(
       :start_at.gte => live_at.to_midnight - 1,
       :start_at.lt => live_at.to_midnight
     )
@@ -40,7 +40,7 @@ class TodaysActivityModel
   end
 
   def last_week_average_by_hour(live_at)
-    result = UniqueVisitors.all(
+    result = HourlyUniqueVisitors.all(
       :start_at.gte => (live_at - live_at.wday).to_midnight - 7,
       :end_at.lte => (live_at - live_at.wday).to_midnight
     ).group_by { |each| each.start_at.hour }.map { |hour, visitors| [hour, average(visitors)] }

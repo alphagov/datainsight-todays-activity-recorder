@@ -17,6 +17,16 @@ describe "VisitorsNarrative" do
     narrative = VisitorsNarrative.new(1200000, 1205000)
     narrative.message.should == "GOV.UK had 1.2 million visitors yesterday, about the same as the day before"
   end
+
+  it "should return an empty message if yesterdays visitors is nil" do
+    narrative = VisitorsNarrative.new(nil, 1205000)
+    narrative.message.should be_empty
+  end
+
+  it "should return a shortened message if visitors for the day before is missing" do
+    narrative = VisitorsNarrative.new(1205000, nil)
+    narrative.message.should  == "GOV.UK had 1.2 million visitors yesterday"
+  end
 end
 
 describe "VisitorsMetric" do
@@ -47,11 +57,11 @@ describe "VisitorsMetric" do
 
   describe "is_increase?" do
     it "should return true if the number of visitors has increased" do
-      VisitorsMetric.new(100, 10).is_increase?.should be_true
+      VisitorsMetric.new(100, 10).increase?.should be_true
     end
 
     it "should return false if the number of visitors has decreased" do
-      VisitorsMetric.new(10, 100).is_increase?.should be_false
+      VisitorsMetric.new(10, 100).increase?.should be_false
     end
   end
 end

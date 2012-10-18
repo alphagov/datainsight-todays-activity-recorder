@@ -3,7 +3,7 @@ require "dm-timestamps"
 require "dm-validations"
 require "dm-aggregates"
 
-class UniqueVisitors
+class DailyUniqueVisitors
   include DataMapper::Resource
   property :id, Serial
 
@@ -16,9 +16,9 @@ class UniqueVisitors
   property :value, Integer, :required => true
 
   validates_with_method :validate_value_positive, :if => lambda { |m| not m.value.nil? }
-  validates_with_method :validate_hour_period, :if => lambda { |m| not m.end_at.nil? and not m.start_at.nil? }
-  validates_with_method :validate_start_at_full_hour, :if => lambda { |m| not m.start_at.nil? }
-  validates_with_method :validate_end_at_full_hour, :if => lambda { |m| not m.end_at.nil? }
+  validates_with_method :validate_day_period, :if => lambda { |m| not m.end_at.nil? and not m.start_at.nil? }
+  validates_with_method :validate_start_at_midnight, :if => lambda { |m| not m.start_at.nil? }
+  validates_with_method :validate_end_at_midnight, :if => lambda { |m| not m.end_at.nil? }
 
   private
   def validate_value_positive
@@ -29,27 +29,27 @@ class UniqueVisitors
     end
   end
 
-  def validate_hour_period
-    if (end_at - start_at) == Rational(1, 24)
+  def validate_day_period
+    if (end_at - start_at) == 1
       true
     else
-      [false, "The time between start at and end at should be an hour."]
+      [false, "The time between start at and end at should be a day."]
     end
   end
 
-  def validate_start_at_full_hour
-    validate_full_hour(start_at, "start at")
+  def validate_start_at_midnight
+    validate_midnight(start_at, "start at")
   end
 
-  def validate_end_at_full_hour
-    validate_full_hour(end_at, "end at")
+  def validate_end_at_midnight
+    validate_midnight(end_at, "end at")
   end
 
-  def validate_full_hour(time, name)
-    if time.minute == 0 and time.second == 0 and time.second_fraction == 0
+  def validate_midnight(time, name)
+    if time.hour == 0 and time.minute == 0 and time.second == 0 and time.second_fraction == 0
       true
     else
-      [false, "The #{name} time has to be at a full hour."]
+      [false, "The #{name} time has to be at midnight."]
     end
   end
 end

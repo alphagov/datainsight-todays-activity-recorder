@@ -8,7 +8,7 @@ describe("Today's activity") do
   end
 
   after(:each) do
-    UniqueVisitors.destroy!
+    HourlyUniqueVisitors.destroy!
   end
 
   it "should return JSON data" do

@@ -3,8 +3,11 @@ Bundler.require
 
 ENV['RACK_ENV'] = "test"
 require "factory_girl"
-require_relative '../lib/unique_visitors_model'
+require_relative '../lib/hourly_unique_visitors_model'
+require_relative '../lib/daily_unique_visitors_model'
 require_relative '../lib/datamapper_config'
+
+require 'timecop'
 
 Datainsight::Logging.configure(:env => :test)
 DataMapperConfig.configure(:test)

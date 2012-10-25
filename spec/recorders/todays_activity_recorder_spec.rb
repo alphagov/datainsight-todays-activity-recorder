@@ -23,18 +23,20 @@ describe "TodaysActivityRecorder" do
   end
 
   before(:each) do
-    UniqueVisitors.destroy!
+    HourlyUniqueVisitors.destroy!
+    DailyUniqueVisitors.destroy!
   end
 
   after(:each) do
-    UniqueVisitors.destroy!
+    HourlyUniqueVisitors.destroy!
+    DailyUniqueVisitors.destroy!
   end
 
   it "should store valid message" do
-    Recorders::TodaysActivityRecorder.process_message(@message)
+    Recorders::TodaysActivityRecorder.process_message(Recorders::TodaysActivityRecorder::HOURLY_KEY, @message)
 
-    UniqueVisitors.all.length.should == 1
-    unique_visitors = UniqueVisitors.first
+    HourlyUniqueVisitors.all.length.should == 1
+    unique_visitors = HourlyUniqueVisitors.first
     unique_visitors.start_at.should == DateTime.new(2012, 8, 6, 10, 0, 0, DateTime.now.zone)
     unique_visitors.end_at.should == DateTime.new(2012, 8, 6, 11, 0, 0, DateTime.now.zone)
     unique_visitors.value.should == 500
@@ -43,14 +45,30 @@ describe "TodaysActivityRecorder" do
     unique_visitors.updated_at.should be_within(a_minute).of(DateTime.now)
   end
 
+  it "should store valid message" do
+    @message[:payload][:start_at] = Date.new(2012, 10, 1).to_datetime.strftime
+    @message[:payload][:end_at] = Date.new(2012, 10, 2).to_datetime.strftime
+
+    Recorders::TodaysActivityRecorder.process_message(Recorders::TodaysActivityRecorder::DAILY_KEY, @message)
+
+    DailyUniqueVisitors.all.length.should == 1
+    unique_visitors = DailyUniqueVisitors.first
+    unique_visitors.start_at.should == DateTime.new(2012, 10, 1, 0, 0, 0, DateTime.now.zone)
+    unique_visitors.end_at.should == DateTime.new(2012, 10, 2, 0, 0, 0, DateTime.now.zone)
+    unique_visitors.value.should == 500
+    unique_visitors.collected_at.should be_within(a_minute).of(yesterday)
+    unique_visitors.created_at.should be_within(a_minute).of(DateTime.now)
+    unique_visitors.updated_at.should be_within(a_minute).of(DateTime.now)
+  end
+
   it "should update existing measurements" do
-    Recorders::TodaysActivityRecorder.process_message(@message)
+    Recorders::TodaysActivityRecorder.process_message(Recorders::TodaysActivityRecorder::HOURLY_KEY, @message)
     @message[:payload][:value][:visitors] = 900
     @message[:envelope][:collected_at] = DateTime.now.strftime
-    Recorders::TodaysActivityRecorder.process_message(@message)
-    UniqueVisitors.all.length.should == 1
+    Recorders::TodaysActivityRecorder.process_message(Recorders::TodaysActivityRecorder::HOURLY_KEY, @message)
+    HourlyUniqueVisitors.all.length.should == 1
 
-    visitors = UniqueVisitors.first
+    visitors = HourlyUniqueVisitors.first
     visitors.value.should == 900
     visitors.collected_at.should be_within(a_minute).of(DateTime.now)
   end
@@ -60,7 +78,7 @@ describe "TodaysActivityRecorder" do
       @message[:payload][:start_at] = "2012-08-06T10:30+00:00"
 
       lambda do
-        Recorders::TodaysActivityRecorder.process_message(@message)
+        Recorders::TodaysActivityRecorder.process_message(Recorders::TodaysActivityRecorder::HOURLY_KEY, @message)
       end.should raise_error
     end
 
@@ -68,7 +86,7 @@ describe "TodaysActivityRecorder" do
       @message[:payload].delete(:value)
 
       lambda do
-        Recorders::TodaysActivityRecorder.process_message(@message)
+        Recorders::TodaysActivityRecorder.process_message(Recorders::TodaysActivityRecorder::HOURLY_KEY, @message)
       end.should raise_error
     end
 
@@ -76,7 +94,7 @@ describe "TodaysActivityRecorder" do
       @message[:payload][:value] = "invalid"
 
       lambda do
-        Recorders::TodaysActivityRecorder.process_message(@message)
+        Recorders::TodaysActivityRecorder.process_message(Recorders::TodaysActivityRecorder::HOURLY_KEY, @message)
       end.should raise_error
     end
 
@@ -84,7 +102,7 @@ describe "TodaysActivityRecorder" do
       @message[:payload][:value] = nil
 
       lambda do
-        Recorders::TodaysActivityRecorder.process_message(@message)
+        Recorders::TodaysActivityRecorder.process_message(Recorders::TodaysActivityRecorder::HOURLY_KEY, @message)
       end.should raise_error
     end
   end

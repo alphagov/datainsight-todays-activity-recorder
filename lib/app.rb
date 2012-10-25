@@ -3,7 +3,8 @@ Bundler.require(:default, :exposer)
 
 require 'json'
 
-require_relative "unique_visitors_model"
+require_relative "hourly_unique_visitors_model"
+require_relative "daily_unique_visitors_model"
 require_relative "todays_activity_model"
 require_relative "daily_visitors_model"
 require_relative "visitors_narrative"

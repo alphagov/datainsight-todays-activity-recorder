@@ -35,7 +35,13 @@ describe("Narrative") do
       last_response.should be_ok
       response = JSON.parse(last_response.body, :symbolize_names => true)
 
-      response[:content].should == "GOV.UK had 12 thousand visitors yesterday, about the same as the day before"
+      response.should have_key(:id)
+      response.should have_key(:web_url)
+      response.should have_key(:updated_at)
+      response[:response_info][:status].should == "ok"
+
+      data = response[:details][:data]
+      data[:content].should == "GOV.UK had 12 thousand visitors yesterday, about the same as the day before"
     end
   end
 

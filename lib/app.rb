@@ -26,7 +26,16 @@ end
 
 get '/todays-activity' do
   content_type :json
-  TodaysActivityModel.new.todays_activity.to_json
+  {
+    :response_info => {:status => "ok"},
+    :id => "/todays-activity",
+    :web_url => "",
+    :details => {
+      :source => ["Google Analytics"],
+      :data => TodaysActivityModel.new.todays_activity
+    },
+    :updated_at => TodaysActivityModel.new.live_at
+  }.to_json
 end
 
 get '/narrative' do
@@ -37,7 +46,16 @@ get '/narrative' do
     daily_visitors.visitors_for(Date.today - 2)
   )
   {
-    :content => narrative.message
+    :response_info => {:status => "ok"},
+    :id => "/narrative",
+    :web_url => "",
+    :details => {
+      :source => ["Google Analytics"],
+      :data => {
+        :content => narrative.message
+      }
+    },
+    :updated_at => daily_visitors.updated_at(Date.today - 1, Date.today - 2)
   }.to_json
 end
 

@@ -30,28 +30,28 @@ describe "TodaysActivityModel" do
       activity = @todays_activity.todays_activity
       activity[:live_at].should == @two_hours_ago
       activity[:for_date].should == @yesterday
-      activity[:values].should have(24).items
-      activity[:values][0].should == {
+      activity[:data].should have(24).items
+      activity[:data][0].should == {
         :hour_of_day => 0,
-        :visitors => {
+        :value => {
           :yesterday => 100,
           :last_week_average => 300
         }}
-      activity[:values][4].should == {
+      activity[:data][4].should == {
         :hour_of_day => 4,
-        :visitors => {
+        :value => {
           :yesterday => 100,
           :last_week_average => 300
         }}
-      activity[:values][7].should == {
+      activity[:data][7].should == {
         :hour_of_day => 7,
-        :visitors => {
+        :value => {
           :yesterday => 100,
           :last_week_average => 300
         }}
-      activity[:values][23].should == {
+      activity[:data][23].should == {
         :hour_of_day => 23,
-        :visitors => {
+        :value => {
           :yesterday => 100,
           :last_week_average => 300
         }}

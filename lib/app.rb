@@ -30,10 +30,7 @@ get '/todays-activity' do
     :response_info => {:status => "ok"},
     :id => "/todays-activity",
     :web_url => "",
-    :details => {
-      :source => ["Google Analytics"],
-      :data => TodaysActivityModel.new.todays_activity
-    },
+    :details => TodaysActivityModel.new.todays_activity,
     :updated_at => TodaysActivityModel.new.live_at
   }.to_json
 end

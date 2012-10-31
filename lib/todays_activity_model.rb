@@ -10,18 +10,20 @@ class TodaysActivityModel
     visitors_yesterday = visitors_yesterday_by_hour(live_at)
     last_week_average = last_week_average_by_hour(live_at)
 
-    values = 24.times.map do |hour|
-      result = {:hour_of_day => hour, :visitors => {}}
-      result[:visitors][:yesterday] = visitors_yesterday[hour]
-      result[:visitors][:last_week_average] =last_week_average[hour]
+    data = 24.times.map do |hour|
+      result = {:hour_of_day => hour, :value => {}}
+      result[:value][:yesterday] = visitors_yesterday[hour]
+      result[:value][:last_week_average] =last_week_average[hour]
 
       result
     end
 
     {
-      :values => values,
+      :source => ["Google Analytics"],
+      :metric => 'visitors',
       :live_at => live_at,
-      :for_date => (live_at - 1).to_date
+      :for_date => (live_at - 1).to_date,
+      :data => data
     }
   end
 

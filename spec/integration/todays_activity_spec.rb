@@ -11,33 +11,55 @@ describe("Today's activity") do
     HourlyUniqueVisitors.destroy!
   end
 
-  it "should return JSON data" do
-    now = DateTime.now
-    add_measurements(now - 10, now + 1)
-    get '/todays-activity'
-    last_response.should be_ok
-    response = JSON.parse(last_response.body, :symbolize_names => true)
+  describe "check response" do
+    before(:all) do
+      now = DateTime.now
 
-    response.should have_key(:id)
-    response.should have_key(:web_url)
-    response.should have_key(:updated_at)
-    response[:response_info][:status].should == "ok"
+      add_measurements(now - 10, now + 1)
+      get '/todays-activity'
+      last_response.should be_ok
 
-    data = response[:details][:data]
+      @response = JSON.parse(last_response.body, :symbolize_names => true)
+    end
 
-    hours = data[:values].map {|item| item[:hour_of_day]}
-    hours.should == (0..23).to_a
+    it "should have id and web_url" do
+      @response[:id].should == '/todays-activity'
+      @response[:web_url].should == ''
+    end
 
-    visitors_yesterday = data[:values].map {|item| item[:visitors][:yesterday] }
-    visitors_yesterday.should == [500] * 24
+    it "should set the updated_at" do
+      @response[:updated_at].should_not be_nil
+      @response[:updated_at].should be_a(String)
+    end
 
-    last_week_average = data[:values].map {|item| item[:visitors][:last_week_average]}
-    last_week_average.should == [500] * 24
+    it "should set the status to be ok" do
+      @response[:response_info].should == {:status => 'ok'}
+    end
 
-    DateTime.parse(data[:live_at]).should be_an_instance_of(DateTime)
-    DateTime.parse(data[:live_at]).should be_within(Rational(1, 24)).of(DateTime.now)
+    it "should have a metric visit" do
+      @response[:details][:metric].should == 'visitors'
+    end
 
-    Date.parse(data[:for_date]).should be_an_instance_of(Date)
-    Date.parse(data[:for_date]).should == Date.today - 1
+    it "should have a live_at" do
+      lambda {DateTime.parse(@response[:details][:live_at])}.should_not raise_error
+      DateTime.parse(@response[:details][:live_at]).should be_within(Rational(1, 24)).of(DateTime.now)
+    end
+
+    it "should have a for date" do
+      lambda{ Date.parse(@response[:details][:for_date])}.should_not raise_error
+      Date.parse(@response[:details][:for_date]).should == Date.today - 1
+    end
+
+    it "should have for each hour data" do
+      (0..23).each do |hour|
+        @response[:details][:data].should include({
+                                                    :hour_of_day => hour,
+                                                    :value => {
+                                                      :yesterday => 500.0,
+                                                      :last_week_average => 500.0
+                                                    }
+                                                  })
+      end
+    end
   end
 end

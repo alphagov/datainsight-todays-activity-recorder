@@ -31,7 +31,7 @@ get '/todays-activity' do
     :id => "/todays-activity",
     :web_url => "",
     :details => TodaysActivityModel.new.todays_activity,
-    :updated_at => TodaysActivityModel.new.live_at
+    :updated_at => TodaysActivityModel.new.last_collected_at
   }.to_json
 end
 

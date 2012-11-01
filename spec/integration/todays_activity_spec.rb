@@ -40,11 +40,6 @@ describe("Today's activity") do
       @response[:details][:metric].should == 'visitors'
     end
 
-    it "should have a live_at" do
-      lambda {DateTime.parse(@response[:details][:live_at])}.should_not raise_error
-      DateTime.parse(@response[:details][:live_at]).should be_within(Rational(1, 24)).of(DateTime.now)
-    end
-
     it "should have a for date" do
       lambda{ Date.parse(@response[:details][:for_date])}.should_not raise_error
       Date.parse(@response[:details][:for_date]).should == Date.today - 1

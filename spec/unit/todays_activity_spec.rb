@@ -23,12 +23,11 @@ describe "TodaysActivityModel" do
 
   describe "todays activity" do
     it "should assemble the result" do
-      @todays_activity.stub(:live_at).and_return(@two_hours_ago)
+      @todays_activity.stub(:last_collected_at).and_return(@two_hours_ago)
       @todays_activity.stub(:visitors_yesterday_by_hour).and_return([100]*24)
       @todays_activity.stub(:last_week_average_by_hour).and_return([300]*24)
 
       activity = @todays_activity.todays_activity
-      activity[:live_at].should == @two_hours_ago
       activity[:for_date].should == @yesterday
       activity[:data].should have(24).items
       activity[:data][0].should == {
@@ -59,14 +58,14 @@ describe "TodaysActivityModel" do
   end
 
 
-  describe("live at") do
+  describe("last collected at") do
     it "should return the most recent collected at" do
       last_date = DateTime.new(2012, 2, 3, 4, 5, 6)
       first_date = DateTime.new(2011, 2, 3, 4, 5, 6)
       FactoryGirl.create(:unique_visitors, collected_at: last_date)
       FactoryGirl.create(:unique_visitors, collected_at: first_date)
 
-      @todays_activity.live_at.should == last_date
+      @todays_activity.last_collected_at.should == last_date
     end
   end
 
@@ -130,10 +129,10 @@ describe "TodaysActivityModel" do
   end
 
   describe "no data" do
-    it "should return UTC 1970-01-01 midnight as live at date" do
+    it "should return UTC 1970-01-01 midnight as last collected at date" do
       @todays_activity = TodaysActivityModel.new
 
-      @todays_activity.live_at.should eql DateTime.parse("1970-01-01T00:00:00+00:00")
+      @todays_activity.last_collected_at.should eql DateTime.parse("1970-01-01T00:00:00+00:00")
     end
   end
 end

@@ -20,6 +20,16 @@ class DailyUniqueVisitors
   validates_with_method :validate_start_at_midnight, :if => lambda { |m| not m.start_at.nil? }
   validates_with_method :validate_end_at_midnight, :if => lambda { |m| not m.end_at.nil? }
 
+  def self.visitors_for(date)
+    result = first(:start_at => date.to_datetime.to_midnight)
+
+    return result.value unless result.nil?
+  end
+
+  def self.updated_at_for(*dates)
+    max(:updated_at, :start_at => dates.map {|date| date.to_datetime.to_midnight })
+  end
+
   private
   def validate_value_positive
     if value >= 0

@@ -6,7 +6,6 @@ require 'json'
 require_relative "hourly_unique_visitors_model"
 require_relative "daily_unique_visitors_model"
 require_relative "todays_activity_model"
-require_relative "daily_visitors_model"
 require_relative "visitors_narrative"
 require_relative "datamapper_config"
 
@@ -37,10 +36,9 @@ end
 
 get '/narrative' do
   content_type :json
-  daily_visitors = DailyVisitorsModel.new
   narrative = VisitorsNarrative.new(
-    daily_visitors.visitors_for(Date.today - 1),
-    daily_visitors.visitors_for(Date.today - 2)
+    DailyUniqueVisitors.visitors_for(Date.today - 1),
+    DailyUniqueVisitors.visitors_for(Date.today - 2)
   )
   {
     :response_info => {:status => "ok"},
@@ -52,7 +50,7 @@ get '/narrative' do
         :content => narrative.message
       }
     },
-    :updated_at => daily_visitors.updated_at(Date.today - 1, Date.today - 2)
+    :updated_at => DailyUniqueVisitors.updated_at_for(Date.today - 1, Date.today - 2)
   }.to_json
 end
 

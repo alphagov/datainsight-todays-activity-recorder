@@ -2,6 +2,7 @@ require "dm-core"
 require "dm-timestamps"
 require "dm-validations"
 require "dm-aggregates"
+require_relative "date_extension"
 
 class DailyUniqueVisitors
   include DataMapper::Resource

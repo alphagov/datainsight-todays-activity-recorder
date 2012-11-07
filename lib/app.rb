@@ -5,7 +5,6 @@ require 'json'
 
 require_relative "hourly_unique_visitors_model"
 require_relative "daily_unique_visitors_model"
-require_relative "todays_activity_model"
 require_relative "visitors_narrative"
 require_relative "datamapper_config"
 
@@ -25,12 +24,30 @@ end
 
 get '/todays-activity' do
   content_type :json
+  last_collected_at = HourlyUniqueVisitors.last_collected_at
+
+  visitors_yesterday = HourlyUniqueVisitors.visitors_yesterday_by_hour(last_collected_at)
+  last_week_average = HourlyUniqueVisitors.last_week_average_by_hour(last_collected_at)
+
   {
     :response_info => {:status => "ok"},
     :id => "/todays-activity",
     :web_url => "",
-    :details => TodaysActivityModel.new.todays_activity,
-    :updated_at => TodaysActivityModel.new.last_collected_at
+    :details => {
+      :source => ["Google Analytics"],
+      :metric => "visitors",
+      :for_date => (last_collected_at - 1).to_date,
+      :data => 24.times.map do |hour|
+        {
+          :hour_of_day => hour,
+          :value => {
+            :yesterday => visitors_yesterday[hour],
+            :last_week_average => last_week_average[hour]
+          }
+        }
+      end
+    },
+    :updated_at => last_collected_at
   }.to_json
 end
 

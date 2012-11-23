@@ -7,8 +7,12 @@ require_relative "hourly_unique_visitors_model"
 require_relative "daily_unique_visitors_model"
 require_relative "visitors_narrative"
 require_relative "datamapper_config"
+require_relative "initializers"
 
 helpers Datainsight::Logging::Helpers
+
+use Airbrake::Rack
+enable :raise_errors
 
 configure do
   enable :logging

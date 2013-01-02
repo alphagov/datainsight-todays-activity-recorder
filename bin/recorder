@@ -3,7 +3,7 @@ require 'bundler/setup'
 Bundler.require(:default, :recorder)
 
 require_relative "../lib/datamapper_config"
-require_relative "../lib/recorders/todays_activity"
+require_relative "../lib/recorder"
 require_relative "../lib/initializers"
 
 include GLI
@@ -18,7 +18,7 @@ command :run do |c|
     begin
       Datainsight::Logging.configure(:type => :recorder)
       DataMapperConfig.configure
-      Recorders::TodaysActivityRecorder.new.run
+      Recorder.new.run
     rescue Exception => e
       Airbrake.notify(e)
       raise e

@@ -1,7 +1,7 @@
-require_relative "../spec_helper"
-require_relative "../../lib/recorders/todays_activity"
+require_relative "spec_helper"
+require_relative "../lib/recorder"
 
-describe "TodaysActivityRecorder" do
+describe "recorder" do
   a_minute = Rational(1, 24 * 60)
   yesterday = DateTime.now - 1
 
@@ -21,7 +21,7 @@ describe "TodaysActivityRecorder" do
         }
       }
     }
-    @recorder = Recorders::TodaysActivityRecorder.new
+    @recorder = Recorder.new
   end
 
   before(:each) do

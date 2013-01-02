@@ -3,8 +3,8 @@ Bundler.require
 
 ENV['RACK_ENV'] = "test"
 require "factory_girl"
-require_relative '../lib/model/hourly_unique_visitors_model'
-require_relative '../lib/model/daily_unique_visitors_model'
+require_relative '../lib/model/hourly_unique_visitors'
+require_relative '../lib/model/daily_unique_visitors'
 require_relative '../lib/datamapper_config'
 
 require 'timecop'

@@ -21,7 +21,7 @@ def add_measurements(start_at, end_at)
       value: 500
     }
     yield(params) if block_given?
-    FactoryGirl.create(:unique_visitors, params)
+    FactoryGirl.create(:hourly_unique_visitors, params)
     start_at += Rational(1, 24)
   end
 end

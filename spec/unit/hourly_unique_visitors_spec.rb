@@ -69,7 +69,7 @@ describe HourlyUniqueVisitors do
   end
   describe "hour length validation" do
     it "should be valid if period is one hour" do
-      unique_visitors = FactoryGirl.build(:unique_visitors,
+      unique_visitors = FactoryGirl.build(:hourly_unique_visitors,
                                           :start_at => DateTime.parse("2012-08-19T01:00:00+00:00"),
                                           :end_at => DateTime.parse("2012-08-19T02:00:00+00:00"))
 
@@ -77,7 +77,7 @@ describe HourlyUniqueVisitors do
     end
 
     it "should not be valid if period is bigger than one hour" do
-      unique_visitors = FactoryGirl.build(:unique_visitors,
+      unique_visitors = FactoryGirl.build(:hourly_unique_visitors,
                                           :start_at => DateTime.parse("2012-08-19T01:00:00+00:00"),
                                           :end_at => DateTime.parse("2012-08-19T02:12:00+00:00"))
 
@@ -85,7 +85,7 @@ describe HourlyUniqueVisitors do
     end
 
     it "should not be valid if period is smaller than one hour" do
-      unique_visitors = FactoryGirl.build(:unique_visitors,
+      unique_visitors = FactoryGirl.build(:hourly_unique_visitors,
                                           :start_at => DateTime.parse("2012-08-19T01:00:00+00:00"),
                                           :end_at => DateTime.parse("2012-08-19T01:59:00+00:00"))
 
@@ -93,7 +93,7 @@ describe HourlyUniqueVisitors do
     end
 
     it "should always be referencing a full hour" do
-      unique_visitors = FactoryGirl.build(:unique_visitors,
+      unique_visitors = FactoryGirl.build(:hourly_unique_visitors,
                                           :start_at => DateTime.parse("2012-08-19T01:01:00+00:00"),
                                           :end_at => DateTime.parse("2012-08-19T02:01:00+00:00"))
 
@@ -103,37 +103,37 @@ describe HourlyUniqueVisitors do
 
   describe "field validation" do
     it "should be invalid if value is null" do
-      unique_visitors = FactoryGirl.build(:unique_visitors, :value => nil)
+      unique_visitors = FactoryGirl.build(:hourly_unique_visitors, :value => nil)
 
       unique_visitors.should_not be_valid
     end
 
     it "should be invalid if value is negative" do
-      unique_visitors = FactoryGirl.build(:unique_visitors, :value => -1)
+      unique_visitors = FactoryGirl.build(:hourly_unique_visitors, :value => -1)
 
       unique_visitors.should_not be_valid
     end
 
     it "should be valid if value is zero" do
-      unique_visitors = FactoryGirl.build(:unique_visitors, :value => 0)
+      unique_visitors = FactoryGirl.build(:hourly_unique_visitors, :value => 0)
 
       unique_visitors.should be_valid
     end
 
     it "should have a non-null start_at" do
-      unique_visitors = FactoryGirl.build(:unique_visitors, :start_at => nil)
+      unique_visitors = FactoryGirl.build(:hourly_unique_visitors, :start_at => nil)
 
       unique_visitors.should_not be_valid
     end
 
     it "should have a non-null end_at" do
-      unique_visitors = FactoryGirl.build(:unique_visitors, :end_at => nil)
+      unique_visitors = FactoryGirl.build(:hourly_unique_visitors, :end_at => nil)
 
       unique_visitors.should_not be_valid
     end
 
     it "should have a non-null collected_at" do
-      unique_visitors = FactoryGirl.build(:unique_visitors, :collected_at => nil)
+      unique_visitors = FactoryGirl.build(:hourly_unique_visitors, :collected_at => nil)
 
       unique_visitors.should_not be_valid
     end
@@ -143,8 +143,8 @@ describe HourlyUniqueVisitors do
     it "should return the most recent collected at" do
       last_date = DateTime.new(2012, 2, 3, 4, 5, 6)
       first_date = DateTime.new(2011, 2, 3, 4, 5, 6)
-      FactoryGirl.create(:unique_visitors, collected_at: last_date)
-      FactoryGirl.create(:unique_visitors, collected_at: first_date)
+      FactoryGirl.create(:hourly_unique_visitors, collected_at: last_date)
+      FactoryGirl.create(:hourly_unique_visitors, collected_at: first_date)
 
       HourlyUniqueVisitors.last_collected_at.should == last_date
     end
@@ -195,7 +195,7 @@ describe HourlyUniqueVisitors do
   describe "average calculation" do
 
     def measurements(*values)
-      values.map { |value| FactoryGirl.build(:unique_visitors, value: value) }
+      values.map { |value| FactoryGirl.build(:hourly_unique_visitors, value: value) }
     end
 
     it do

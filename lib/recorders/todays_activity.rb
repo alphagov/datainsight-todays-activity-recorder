@@ -22,53 +22,11 @@ module Recorders
       routing_key = message[:envelope][:_routing_key]
       case routing_key
       when "google_analytics.visitors.hourly"
-        process_hourly_message(message)
+        HourlyUniqueVisitors.update_from_message(message)
       when "google_analytics.visitors.daily"
-        process_daily_message(message)
+        DailyUniqueVisitors.update_from_message(message)
       else
         raise "Unsupported routing key: #{routing_key}"
-      end
-    end
-
-    def process_hourly_message(message)
-      unique_visitors = HourlyUniqueVisitors.first(
-        :start_at => DateTime.parse(message[:payload][:start_at]),
-        :end_at => DateTime.parse(message[:payload][:end_at])
-      )
-      if unique_visitors
-        unique_visitors.update(
-          collected_at: message[:envelope][:collected_at],
-          value: message[:payload][:value][:visitors]
-        )
-      else
-        HourlyUniqueVisitors.create(
-          :collected_at => DateTime.parse(message[:envelope][:collected_at]),
-          :source => message[:envelope][:collector],
-          :start_at => DateTime.parse(message[:payload][:start_at]),
-          :end_at => DateTime.parse(message[:payload][:end_at]),
-          :value => message[:payload][:value][:visitors]
-        )
-      end
-    end
-
-    def process_daily_message(message)
-      unique_visitors = DailyUniqueVisitors.first(
-        :start_at => DateTime.parse(message[:payload][:start_at]),
-        :end_at => DateTime.parse(message[:payload][:end_at])
-      )
-      if unique_visitors
-        unique_visitors.update(
-            collected_at: message[:envelope][:collected_at],
-            value: message[:payload][:value][:visitors]
-        )
-      else
-        DailyUniqueVisitors.create(
-            :collected_at => DateTime.parse(message[:envelope][:collected_at]),
-            :source => message[:envelope][:collector],
-            :start_at => DateTime.parse(message[:payload][:start_at]),
-            :end_at => DateTime.parse(message[:payload][:end_at]),
-            :value => message[:payload][:value][:visitors]
-        )
       end
     end
 

@@ -1,6 +1,67 @@
 require_relative '../spec_helper'
 
+def daily_message(data = {})
+  default_message = {
+      envelope: {
+          collected_at: "2012-08-07T12:15:35",
+          collector: "Google Analytics",
+          _routing_key: "google_analytics.visitors.daily"
+      },
+      payload: {
+          start_at: "2012-08-06T00:00:00+00:00",
+          end_at: "2012-08-07T00:00:00+00:00",
+          value: {
+              site: "govuk",
+              visitors: 12345
+          }
+      }
+  }
+
+  default_message[:payload][:value].merge! data
+
+  return default_message
+end
+
 describe DailyUniqueVisitors do
+  before(:each) do
+    DailyUniqueVisitors.destroy!
+  end
+
+  after(:each) do
+    DailyUniqueVisitors.destroy!
+  end
+
+  describe "update from message" do
+    it "should insert a new record" do
+      DailyUniqueVisitors.update_from_message(daily_message)
+
+      visitors = DailyUniqueVisitors.all
+
+      visitors.should have(1).item
+
+      visitors.first.collected_at.should == DateTime.new(2012, 8, 7, 12, 15, 35)
+      visitors.first.source.should == "Google Analytics"
+      visitors.first.start_at.should == DateTime.new(2012, 8, 6)
+      visitors.first.end_at.should == DateTime.new(2012, 8, 7)
+      visitors.first.value.should == 12345
+    end
+
+    it "should update an existing record" do
+      DailyUniqueVisitors.update_from_message(daily_message(visitors: 100))
+      DailyUniqueVisitors.update_from_message(daily_message(visitors: 200))
+
+      visitors = DailyUniqueVisitors.all
+
+      visitors.should have(1).item
+
+      visitors.first.collected_at.should == DateTime.new(2012, 8, 7, 12, 15, 35)
+      visitors.first.source.should == "Google Analytics"
+      visitors.first.start_at.should == DateTime.new(2012, 8, 6)
+      visitors.first.end_at.should == DateTime.new(2012, 8, 7)
+      visitors.first.value.should == 200
+    end
+  end
+
   describe "hour length validation" do
     it "should be valid if period is a day" do
       unique_visitors = FactoryGirl.build(:daily_unique_visitors,
@@ -108,7 +169,6 @@ describe DailyUniqueVisitors do
 
       visitors_for_date.should be_nil
     end
-
   end
 
 end

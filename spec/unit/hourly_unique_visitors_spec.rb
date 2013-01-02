@@ -1,6 +1,29 @@
 require_relative "../spec_helper"
 require_relative "../../lib/date_extension"
 
+def hourly_message(data = {})
+  default_message = {
+      envelope: {
+          collected_at: "2012-08-07T12:15:35",
+          collector: "Google Analytics",
+          _routing_key: "google_analytics.visitors.hourly"
+      },
+      payload: {
+          start_at: "2012-08-06T00:00:00+00:00",
+          end_at: "2012-08-06T01:00:00+00:00",
+          value: {
+              site: "govuk",
+              visitors: 12345
+          }
+      }
+  }
+
+  default_message[:payload][:value].merge! data
+
+  return default_message
+end
+
+
 describe HourlyUniqueVisitors do
   before(:each) do
     @two_hours_ago = DateTime.new(2012, 8, 16, 9, 50, 0)
@@ -14,6 +37,36 @@ describe HourlyUniqueVisitors do
     HourlyUniqueVisitors.destroy!
   end
 
+  describe "update from message" do
+    it "should insert a new record" do
+      HourlyUniqueVisitors.update_from_message(hourly_message)
+
+      visitors = HourlyUniqueVisitors.all
+
+      visitors.should have(1).item
+
+      visitors.first.collected_at.should == DateTime.new(2012, 8, 7, 12, 15, 35)
+      visitors.first.source.should == "Google Analytics"
+      visitors.first.start_at.should == DateTime.new(2012, 8, 6)
+      visitors.first.end_at.should == DateTime.new(2012, 8, 6, 1)
+      visitors.first.value.should == 12345
+    end
+
+    it "should update an existing record" do
+      HourlyUniqueVisitors.update_from_message(hourly_message(visitors: 100))
+      HourlyUniqueVisitors.update_from_message(hourly_message(visitors: 200))
+
+      visitors = HourlyUniqueVisitors.all
+
+      visitors.should have(1).item
+
+      visitors.first.collected_at.should == DateTime.new(2012, 8, 7, 12, 15, 35)
+      visitors.first.source.should == "Google Analytics"
+      visitors.first.start_at.should == DateTime.new(2012, 8, 6)
+      visitors.first.end_at.should == DateTime.new(2012, 8, 6, 1)
+      visitors.first.value.should == 200
+    end
+  end
   describe "hour length validation" do
     it "should be valid if period is one hour" do
       unique_visitors = FactoryGirl.build(:unique_visitors,

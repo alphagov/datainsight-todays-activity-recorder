@@ -56,6 +56,7 @@ module Recorders
       else
         HourlyUniqueVisitors.create(
           :collected_at => DateTime.parse(message[:envelope][:collected_at]),
+          :source => message[:envelope][:collector],
           :start_at => DateTime.parse(message[:payload][:start_at]),
           :end_at => DateTime.parse(message[:payload][:end_at]),
           :value => message[:payload][:value][:visitors]

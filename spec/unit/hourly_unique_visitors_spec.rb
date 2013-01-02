@@ -1,4 +1,5 @@
-require_relative '../spec_helper'
+require_relative "../spec_helper"
+require_relative "../../lib/date_extension"
 
 describe HourlyUniqueVisitors do
   before(:each) do

@@ -2,7 +2,7 @@ source "https://rubygems.org"
 source 'https://gems.gemfury.com/vo6ZrmjBQu5szyywDszE/'
 
 gem "rake", "0.9.2"
-gem "datainsight_recorder", "0.0.6"
+gem "datainsight_recorder", "0.0.7"
 gem "data_mapper", "1.2.0"
 gem "dm-mysql-adapter", "1.2.0"
 gem "datainsight_logging"

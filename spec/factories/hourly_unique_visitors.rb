@@ -1,5 +1,5 @@
 require_relative "../../lib/datamapper_config"
-require_relative "../../lib/hourly_unique_visitors_model"
+require_relative "../../lib/model/hourly_unique_visitors_model"
 
 FactoryGirl.define do
   factory :unique_visitors, class: HourlyUniqueVisitors do

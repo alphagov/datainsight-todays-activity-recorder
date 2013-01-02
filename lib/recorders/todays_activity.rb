@@ -1,7 +1,7 @@
 require 'json'
 
-require_relative '../hourly_unique_visitors_model'
-require_relative '../daily_unique_visitors_model'
+require_relative '../model/hourly_unique_visitors_model'
+require_relative '../model/daily_unique_visitors_model'
 
 module Recorders
   class TodaysActivityRecorder
@@ -76,6 +76,7 @@ module Recorders
       else
         DailyUniqueVisitors.create(
             :collected_at => DateTime.parse(message[:envelope][:collected_at]),
+            :source => message[:envelope][:collector],
             :start_at => DateTime.parse(message[:payload][:start_at]),
             :end_at => DateTime.parse(message[:payload][:end_at]),
             :value => message[:payload][:value][:visitors]

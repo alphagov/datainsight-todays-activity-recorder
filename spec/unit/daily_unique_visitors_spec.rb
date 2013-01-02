@@ -111,26 +111,4 @@ describe DailyUniqueVisitors do
 
   end
 
-  describe "updated_at_for" do
-    it "should return the most recent start_at as a midnight datetime" do
-      date = DateTime.new(2012, 5, 5, 0, 0, 0)
-
-      FactoryGirl.create(:daily_unique_visitors,
-                         :value => 12000,
-                         :start_at => date,
-                         :end_at => date + 1)
-
-      FactoryGirl.create(:daily_unique_visitors,
-                         :value => 12999,
-                         :start_at => date - 1,
-                         :end_at => date)
-
-      FactoryGirl.create(:daily_unique_visitors,
-                         :value => 1700000,
-                         :start_at => date + 1,
-                         :end_at => date + 2)
-
-      DailyUniqueVisitors.updated_at_for(date - 1, date).should be_within(1).of(DateTime.now)
-    end
-  end
 end

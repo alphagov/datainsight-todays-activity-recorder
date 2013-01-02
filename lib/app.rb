@@ -3,8 +3,8 @@ Bundler.require(:default, :exposer)
 
 require 'json'
 
-require_relative "hourly_unique_visitors_model"
-require_relative "daily_unique_visitors_model"
+require_relative "model/hourly_unique_visitors_model"
+require_relative "model/daily_unique_visitors_model"
 require_relative "visitors_narrative"
 require_relative "datamapper_config"
 require_relative "initializers"
@@ -71,7 +71,7 @@ get '/narrative' do
         :content => narrative.message
       }
     },
-    :updated_at => DailyUniqueVisitors.updated_at_for(Date.today - 1, Date.today - 2)
+    :updated_at => DailyUniqueVisitors.latest_collected_at(Date.today - 1, Date.today - 2)
   }.to_json
 end
 

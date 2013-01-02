@@ -58,9 +58,6 @@ GEM
       json (~> 1.6)
       json_pure (~> 1.6)
       multi_json (~> 1.0)
-    dm-sqlite-adapter (1.2.0)
-      dm-do-adapter (~> 1.2.0)
-      do_sqlite3 (~> 0.10.6)
     dm-timestamps (1.2.0)
       dm-core (~> 1.2.0)
     dm-transactions (1.2.0)
@@ -76,8 +73,6 @@ GEM
     dm-validations (1.2.0)
       dm-core (~> 1.2.0)
     do_mysql (0.10.8)
-      data_objects (= 0.10.8)
-    do_sqlite3 (0.10.8)
       data_objects (= 0.10.8)
     factory_girl (4.0.0)
       activesupport (>= 3.0.0)
@@ -133,11 +128,7 @@ DEPENDENCIES
   autotest
   bunny
   ci_reporter
-  data_mapper (= 1.2.0)
-  datainsight_logging
   datainsight_recorder (= 0.0.7)
-  dm-mysql-adapter (= 1.2.0)
-  dm-sqlite-adapter (= 1.2.0)
   factory_girl
   gli (= 1.6.0)
   rack-test

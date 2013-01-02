@@ -3,9 +3,6 @@ source 'https://gems.gemfury.com/vo6ZrmjBQu5szyywDszE/'
 
 gem "rake", "0.9.2"
 gem "datainsight_recorder", "0.0.7"
-gem "data_mapper", "1.2.0"
-gem "dm-mysql-adapter", "1.2.0"
-gem "datainsight_logging"
 gem "airbrake", "3.1.5"
 
 group :exposer do
@@ -19,7 +16,6 @@ group :recorder do
 end
 
 group :test do
-  gem "dm-sqlite-adapter", "1.2.0"
   gem "rack-test"
   gem "rspec", "2.10.0"
   gem "ci_reporter"

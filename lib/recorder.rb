@@ -10,6 +10,10 @@ require_relative 'model/daily_unique_visitors'
 class Recorder
   include DataInsight::Recorder::AMQP
 
+  def queue_name
+    "datainsight_todays_activity_recorder"
+  end
+
   def routing_keys
     [
       'google_analytics.visitors.hourly',

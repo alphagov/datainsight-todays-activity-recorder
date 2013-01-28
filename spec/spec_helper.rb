@@ -4,6 +4,7 @@ Bundler.require
 ENV['RACK_ENV'] = "test"
 require "factory_girl"
 require_relative '../lib/model/hourly_unique_visitors'
+require_relative '../lib/model/hourly_unique_visitors_collection'
 require_relative '../lib/model/daily_unique_visitors'
 require_relative '../lib/datamapper_config'
 
@@ -16,6 +17,7 @@ FactoryGirl.find_definitions
 def add_measurements(start_at, end_at)
   while start_at < end_at
     params = {
+      collected_at: end_at,
       start_at: start_at,
       end_at: start_at + Rational(1, 24),
       value: 500

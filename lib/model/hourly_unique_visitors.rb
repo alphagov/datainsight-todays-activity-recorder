@@ -50,6 +50,10 @@ class HourlyUniqueVisitors
     visitors
   end
 
+  def self.period(from, to)
+    all(:start_at.gte => from, :end_at.lte => to)
+  end
+
   # TODO: replace with calc from stats gem or extract into utility
   def self.average(unique_visitors)
     if unique_visitors.empty?

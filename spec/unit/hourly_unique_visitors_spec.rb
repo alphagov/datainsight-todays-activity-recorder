@@ -3,19 +3,19 @@ require_relative "../../lib/date_extension"
 
 def hourly_message(data = {})
   default_message = {
-      envelope: {
-          collected_at: "2012-08-07T12:15:35",
-          collector: "Google Analytics",
-          _routing_key: "google_analytics.visitors.hourly"
-      },
-      payload: {
-          start_at: "2012-08-06T00:00:00+00:00",
-          end_at: "2012-08-06T01:00:00+00:00",
-          value: {
-              site: "govuk",
-              visitors: 12345
-          }
+    envelope: {
+      collected_at: "2012-08-07T12:15:35",
+      collector: "Google Analytics",
+      _routing_key: "google_analytics.visitors.hourly"
+    },
+    payload: {
+      start_at: "2012-08-06T00:00:00+00:00",
+      end_at: "2012-08-06T01:00:00+00:00",
+      value: {
+        site: "govuk",
+        visitors: 12345
       }
+    }
   }
 
   default_message[:payload][:value].merge! data
@@ -171,22 +171,52 @@ describe HourlyUniqueVisitors do
     end
 
     describe "weekly average" do
-      it "should return weekly average" do
-        HourlyUniqueVisitors.stub(:average).and_return(400)
+      HOURS_IN_A_WEEK = 7 * 24
 
-        activity = HourlyUniqueVisitors.last_week_average_by_hour(@two_hours_ago)
-        activity.should have(24).items
-        activity.should == [400] * 24
+      def d(time_string)
+        return DateTime.parse(time_string)
       end
 
-      it "should include last hour of previous Saturday in weekly average" do
-        HourlyUniqueVisitors.stub(:average) {|ms| ms.length}
+      before(:each) {
+        HourlyUniqueVisitors.destroy
+      }
 
-        activity = HourlyUniqueVisitors.last_week_average_by_hour(@two_hours_ago)
-        activity.should have(24).items
-        activity.should == [7] * 24
+      it "should return *a* record within the requested time period" do
+        FactoryGirl.create(:hourly_unique_visitors,
+                           start_at: d("2012-12-12 00:00:00"),
+                           end_at: d("2012-12-12 01:00:00"))
 
+        records = HourlyUniqueVisitors.period(d("2012-12-11 00:00:00"), d("2012-12-13 00:00:00"))
+
+        records.should have(1).record
+        records.first.start_at.should == d("2012-12-12 00:00:00")
+        records.first.end_at.should == d("2012-12-12 01:00:00")
       end
+
+      it "should return *all* records within the requested time period" do
+        add_measurements(d("2012-12-12 00:00:00"),d("2012-12-14 00:00:00"))
+
+        records = HourlyUniqueVisitors.period(d("2012-12-13 00:00:00"), d("2012-12-13 12:00:00"))
+
+        records.should have(12).records
+      end
+
+      it "should not return records outside of the requested time period" do
+        FactoryGirl.create(:hourly_unique_visitors,
+                           start_at: d("2012-12-15 00:00:00"),
+                           end_at: d("2012-12-15 01:00:00"))
+
+        records = HourlyUniqueVisitors.period(d("2012-12-11 00:00:00"), d("2012-12-13 00:00:00"))
+
+        records.should be_empty
+      end
+
+      it "should return an empty array if there are no matching records" do
+        records = HourlyUniqueVisitors.period(d("2012-12-11 00:00:00"), d("2012-12-13 00:00:00"))
+
+        records.should be_empty
+      end
+
     end
 
 
@@ -210,6 +240,12 @@ describe HourlyUniqueVisitors do
       HourlyUniqueVisitors.average(measurements(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)).should == 5.5
     end
 
+  end
+
+  describe "average visitors for the last six weeks for a given day" do
+    it "should calculate the average visitors on a given week day" do
+
+    end
   end
 
 end

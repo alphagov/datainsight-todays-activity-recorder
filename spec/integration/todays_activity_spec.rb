@@ -13,10 +13,15 @@ describe("Today's activity") do
 
   describe "check response" do
     before(:all) do
-      now = DateTime.now
+      now = DateTime.parse("2013-01-25 12:00:00")
+      two_months_ago = now - 60
 
-      add_measurements(now - 10, now + 1)
+      @yesterday = now.to_date - 1
+
+      add_measurements(two_months_ago, now)
+
       get '/todays-activity'
+
       last_response.should be_ok
 
       @response = JSON.parse(last_response.body, :symbolize_names => true)
@@ -42,16 +47,16 @@ describe("Today's activity") do
 
     it "should have a for date" do
       lambda{ Date.parse(@response[:details][:for_date])}.should_not raise_error
-      Date.parse(@response[:details][:for_date]).should == Date.today - 1
+      Date.parse(@response[:details][:for_date]).should == @yesterday
     end
 
-    it "should have for each hour data" do
+    it "should have data for each hour" do
       (0..23).each do |hour|
         @response[:details][:data].should include({
                                                     :hour_of_day => hour,
                                                     :value => {
                                                       :yesterday => 500.0,
-                                                      :last_week_average => 500.0
+                                                      :historical_average => 500.0
                                                     }
                                                   })
       end

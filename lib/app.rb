@@ -31,7 +31,8 @@ get '/todays-activity' do
   last_collected_at = HourlyUniqueVisitors.last_collected_at
 
   visitors_yesterday = HourlyUniqueVisitors.visitors_yesterday_by_hour(last_collected_at)
-  last_week_average = HourlyUniqueVisitors.last_week_average_by_hour(last_collected_at)
+  collection = HourlyUniqueVisitorsCollection.six_week_period_until(last_collected_at.to_midnight - 1)
+  average_traffic_for_day = collection.filter_by_day(last_collected_at.wday).hourly_average()
 
   {
     :response_info => {:status => "ok"},
@@ -46,7 +47,7 @@ get '/todays-activity' do
           :hour_of_day => hour,
           :value => {
             :yesterday => visitors_yesterday[hour],
-            :last_week_average => last_week_average[hour]
+            :historical_average => average_traffic_for_day[hour]
           }
         }
       end

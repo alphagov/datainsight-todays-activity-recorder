@@ -41,15 +41,6 @@ describe("Today's activity") do
       @response[:response_info].should == {:status => 'ok'}
     end
 
-    it "should have a metric visit" do
-      @response[:details][:metric].should == 'visitors'
-    end
-
-    it "should have a for date" do
-      lambda{ Date.parse(@response[:details][:for_date])}.should_not raise_error
-      Date.parse(@response[:details][:for_date]).should == @yesterday
-    end
-
     describe "data" do
       it "should have a start timestamp" do
         @response[:details][:data][ 0][:start_at].should == "2013-01-24T00:00:00+00:00"

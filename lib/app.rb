@@ -42,8 +42,6 @@ get '/todays-activity' do
     :web_url => "",
     :details => {
       :source => ["Google Analytics"],
-      :metric => "visitors",
-      :for_date => requested_date,
       :data => 24.times.map do |hour|
         {
           :start_at => DateTime.new(requested_date.year, requested_date.month, requested_date.day, hour),

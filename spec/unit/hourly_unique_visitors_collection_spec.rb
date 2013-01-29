@@ -51,6 +51,23 @@ describe HourlyUniqueVisitorsCollection do
 
   end
 
+  it "should calculate the average for a lot of numbers for the same day" do
+    visitors_collection = [
+      FactoryGirl.build(:hourly_unique_visitors, start_at: DateTime.parse("2013-01-29 08:00:00"), value: 70000),
+      FactoryGirl.build(:hourly_unique_visitors, start_at: DateTime.parse("2013-01-22 08:00:00"), value: 80000),
+      FactoryGirl.build(:hourly_unique_visitors, start_at: DateTime.parse("2013-01-15 08:00:00"), value: 71000),
+      FactoryGirl.build(:hourly_unique_visitors, start_at: DateTime.parse("2013-01-8 08:00:00"), value: 86000),
+      FactoryGirl.build(:hourly_unique_visitors, start_at: DateTime.parse("2013-01-1 08:00:00"), value: 67000),
+      FactoryGirl.build(:hourly_unique_visitors, start_at: DateTime.parse("2012-12-25 08:00:00"), value: 80002),
+    ]
+
+    tuesdays = HourlyUniqueVisitorsCollection.new(visitors_collection).filter_by_day(Day::TUESDAY)
+
+    tuesdays.results.should have(6).records
+
+    tuesdays.hourly_average[8].should == 75667
+  end
+
   it "should return averages with hour as index" do
     visitors_collection = [
       FactoryGirl.build(:hourly_unique_visitors, start_at: DateTime.parse("2013-01-29 08:00:00"), value: 25),

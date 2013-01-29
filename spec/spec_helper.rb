@@ -5,6 +5,7 @@ ENV['RACK_ENV'] = "test"
 require "factory_girl"
 require_relative '../lib/model/hourly_unique_visitors'
 require_relative '../lib/model/hourly_unique_visitors_collection'
+require_relative '../lib/model/day'
 require_relative '../lib/model/daily_unique_visitors'
 require_relative '../lib/datamapper_config'
 

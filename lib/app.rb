@@ -30,6 +30,7 @@ end
 get '/todays-activity' do
   content_type :json
   last_collected_at = HourlyUniqueVisitors.last_collected_at
+  requested_date = (last_collected_at - 1).to_date
 
   visitors_yesterday = HourlyUniqueVisitors.visitors_yesterday_by_hour(last_collected_at)
   collection = HourlyUniqueVisitorsCollection.six_week_period_until(last_collected_at.to_midnight - 1)
@@ -42,14 +43,13 @@ get '/todays-activity' do
     :details => {
       :source => ["Google Analytics"],
       :metric => "visitors",
-      :for_date => (last_collected_at - 1).to_date,
+      :for_date => requested_date,
       :data => 24.times.map do |hour|
         {
-          :hour_of_day => hour,
-          :value => {
-            :yesterday => visitors_yesterday[hour],
-            :historical_average => average_traffic_for_day[hour]
-          }
+          :start_at => DateTime.new(requested_date.year, requested_date.month, requested_date.day, hour),
+          :end_at => DateTime.new(requested_date.year, requested_date.month, requested_date.day, hour + 1),
+          :visitors => visitors_yesterday[hour],
+          :historical_average => average_traffic_for_day[hour]
         }
       end
     },

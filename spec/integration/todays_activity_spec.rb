@@ -7,7 +7,7 @@ describe("Today's activity") do
     Sinatra::Application
   end
 
-  after(:each) do
+  before(:each) do
     HourlyUniqueVisitors.destroy!
   end
 
@@ -19,6 +19,15 @@ describe("Today's activity") do
       @yesterday = now.to_date - 1
 
       add_measurements(two_months_ago, now)
+
+      get_measurement(@yesterday,  9).update(value: 12345)
+
+      get_measurement(@yesterday - 7,  0).update(value: 40000)
+      get_measurement(@yesterday - 14, 0).update(value: 45678)
+      get_measurement(@yesterday - 21, 0).update(value: 21543)
+      get_measurement(@yesterday - 28, 0).update(value: 54876)
+      get_measurement(@yesterday - 35, 0).update(value: 23765)
+      get_measurement(@yesterday - 42, 0).update(value: 34875)
 
       get '/todays-activity'
 
@@ -57,11 +66,12 @@ describe("Today's activity") do
       it "should expose the number of visitors for the period" do
         @response[:details][:data][ 0][:visitors].should == 500
         @response[:details][:data][ 5][:visitors].should == 500
+        @response[:details][:data][ 9][:visitors].should == 12345
         @response[:details][:data][22][:visitors].should == 500
       end
 
       it "should expose the historical average of visitors for that interval of time" do
-        @response[:details][:data][ 0][:historical_average].should == 500
+        @response[:details][:data][ 0][:historical_average].should == 36789.5
         @response[:details][:data][ 5][:historical_average].should == 500
         @response[:details][:data][22][:historical_average].should == 500
       end

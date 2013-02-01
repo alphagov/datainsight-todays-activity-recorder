@@ -219,33 +219,6 @@ describe HourlyUniqueVisitors do
 
     end
 
-
-  end
-
-  describe "average calculation" do
-
-    def measurements(*values)
-      values.map { |value| FactoryGirl.build(:hourly_unique_visitors, value: value) }
-    end
-
-    it do
-      HourlyUniqueVisitors.average(measurements()).should == 0
-    end
-
-    it do
-      HourlyUniqueVisitors.average(measurements(50)).should == 50
-    end
-
-    it do
-      HourlyUniqueVisitors.average(measurements(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)).should == 5.5
-    end
-
-  end
-
-  describe "average visitors for the last six weeks for a given day" do
-    it "should calculate the average visitors on a given week day" do
-
-    end
   end
 
 end

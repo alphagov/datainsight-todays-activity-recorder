@@ -10,7 +10,7 @@ class HourlyUniqueVisitorsCollection
 
   def self.six_week_period_until(upto)
     date_limit = upto.to_midnight
-    HourlyUniqueVisitorsCollection.new(HourlyUniqueVisitors.period(date_limit - 7*6, date_limit))
+    HourlyUniqueVisitorsCollection.new(HourlyUniqueVisitors.period(date_limit - (7 * 6), date_limit))
   end
 
   def filter_by_day(day)
@@ -21,7 +21,7 @@ class HourlyUniqueVisitorsCollection
     averages = [nil] * 24
     @results
       .group_by { |huv| huv.start_at.hour }
-      .each { |h, huv_list| averages[h] = mean( huv_list.map(&:value) ) }
+      .each { |hour, huv_list| averages[hour] = mean( huv_list.map(&:value) ) }
     averages
   end
 

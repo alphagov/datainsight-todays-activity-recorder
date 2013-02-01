@@ -34,7 +34,7 @@ get '/todays-activity' do
 
   visitors_yesterday = HourlyUniqueVisitors.visitors_yesterday_by_hour(last_collected_at)
   collection = HourlyUniqueVisitorsCollection.six_week_period_until(last_collected_at.to_midnight - 1)
-  average_traffic_for_day = collection.filter_by_day(last_collected_at.wday).hourly_average()
+  average_traffic_for_day = collection.filter_by_day(requested_date.wday).hourly_average()
 
   {
     :response_info => {:status => "ok"},

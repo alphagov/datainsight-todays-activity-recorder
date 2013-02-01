@@ -28,3 +28,8 @@ def add_measurements(start_at, end_at)
     start_at += Rational(1, 24)
   end
 end
+
+
+def get_measurement(date, hour)
+  HourlyUniqueVisitors.first(start_at: DateTime.new(date.year, date.month, date.day, hour))
+end

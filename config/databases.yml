@@ -1,0 +1,6 @@
+development:
+  uri: "mysql://root:@localhost/datainsights_todays_activity"
+production:
+  uri: "mysql://datainsight:@localhost/datainsights_todays_activity"
+test:
+  uri: "mysql://datainsight:@localhost/datainsights_todays_activity_test"

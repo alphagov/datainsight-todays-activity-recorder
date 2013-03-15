@@ -3,16 +3,17 @@ Bundler.require
 
 ENV['RACK_ENV'] = "test"
 require "factory_girl"
+require "datainsight_recorder/datamapper_config"
+
 require_relative '../lib/model/hourly_unique_visitors'
 require_relative '../lib/model/hourly_unique_visitors_collection'
 require_relative '../lib/model/day'
 require_relative '../lib/model/daily_unique_visitors'
-require_relative '../lib/datamapper_config'
 
 require 'timecop'
 
 Datainsight::Logging.configure(:env => :test)
-DataMapperConfig.configure(:test)
+DataInsight::Recorder::DataMapperConfig.configure(:test)
 FactoryGirl.find_definitions
 
 def add_measurements(start_at, end_at)

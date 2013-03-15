@@ -1,4 +1,5 @@
 require 'rubygems'
+require 'datainsight_recorder/rake_tasks'
 
 unless [ENV["RACK_ENV"], ENV["RAILS_ENV"]].include? "production"
   require 'rspec/core/rake_task'
@@ -22,42 +23,6 @@ unless [ENV["RACK_ENV"], ENV["RAILS_ENV"]].include? "production"
     RSpec::Core::RakeTask.new(:functional) do |task|
       task.pattern = "spec/functional/*_spec.rb"
       task.rspec_opts = ["--format documentation"]
-    end
-  end
-end
-
-require_relative "lib/datamapper_config"
-
-task :environment do
-  DataMapperConfig.configure
-end
-
-namespace :db do
-  namespace :migrate do
-    desc "Run all pending migrations, or up to specified migration"
-    task :up, [:version] => :load_migrations do |t, args|
-      if version = args[:version] || ENV['VERSION']
-        migrate_up!(version)
-      else
-        migrate_up!
-      end
-    end
-
-    desc "Roll back all migrations, or down to specified migration"
-    task :down, [:version] => :load_migrations do |t, args|
-      if version = args[:version] || ENV['VERSION']
-        migrate_down!(version)
-      else
-        migrate_down!
-      end
-    end
-  end
-  task :migrate => "migrate:up"
-
-  task :load_migrations => :environment do
-    require 'dm-migrations/migration_runner'
-    FileList['db/migrate/*.rb'].each do |migration|
-      load migration
     end
   end
 end

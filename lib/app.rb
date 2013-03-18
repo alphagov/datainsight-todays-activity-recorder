@@ -27,6 +27,30 @@ def most_recent_collection_date(visitors)
   visitors.map(&:collected_at).max
 end
 
+# Hack to force the time to be displayed as BST when it should be
+# This manually adds the time offset when in British summer time. This
+# will result in the correct time because of how DataMapper is losing time
+# zone information.
+#
+# This is a temporary hack until the underlying data is migrated to UTC.
+require "tzinfo"
+
+class DateTime
+  def is_summer_time?
+    period = TZInfo::Timezone.get("Europe/London").period_for_utc(self)
+
+    period.utc_total_offset != 0
+  end
+
+  def format_as_london_time
+    if self.is_summer_time?
+      self.strftime.sub(/\+00:00/, '+01:00')
+    else
+      self.strftime
+    end
+  end
+end
+
 get '/todays-activity' do
   content_type :json
   last_collected_at = HourlyUniqueVisitors.last_collected_at
@@ -43,15 +67,17 @@ get '/todays-activity' do
     :details => {
       :source => ["Google Analytics"],
       :data => 24.times.map do |hour|
+        start_at = DateTime.new(requested_date.year, requested_date.month, requested_date.day, hour)
+        end_at = start_at + Rational(1, 24)
         {
-          :start_at => DateTime.new(requested_date.year, requested_date.month, requested_date.day, hour),
-          :end_at => DateTime.new(requested_date.year, requested_date.month, requested_date.day, hour + 1),
+          :start_at => start_at.format_as_london_time,
+          :end_at => end_at.format_as_london_time,
           :visitors => visitors_yesterday[hour],
           :historical_average => average_traffic_for_day[hour]
         }
       end
     },
-    :updated_at => last_collected_at
+    :updated_at => last_collected_at.format_as_london_time
   }.to_json
 end
 

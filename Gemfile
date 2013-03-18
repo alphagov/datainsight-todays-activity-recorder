@@ -4,6 +4,7 @@ source 'https://BnrJb6FZyzspBboNJzYZ@gem.fury.io/govuk/'
 gem "rake", "0.9.2"
 gem "datainsight_recorder", "0.3.1"
 gem "airbrake", "3.1.5"
+gem "tzinfo", "~> 0.3.37"
 
 group :exposer do
   gem "unicorn"

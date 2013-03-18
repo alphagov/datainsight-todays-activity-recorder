@@ -13,6 +13,8 @@ describe("Today's activity") do
 
   describe "check response" do
     before(:all) do
+      HourlyUniqueVisitors.destroy!
+
       now = DateTime.parse("2013-01-25 12:00:00")
       two_months_ago = now - 60
 
@@ -75,6 +77,57 @@ describe("Today's activity") do
         @response[:details][:data][ 5][:historical_average].should == 500
         @response[:details][:data][22][:historical_average].should == 500
       end
+    end
+  end
+
+  describe "summer time" do
+    it "should use BST for summer timestamps when going to summer" do
+      now = DateTime.parse("2013-04-01 12:00:00")
+
+      add_measurements(now - 2, now)
+
+      get '/todays-activity'
+
+      last_response.should be_ok
+
+      response = JSON.parse(last_response.body, :symbolize_names => true)
+
+      response[:details][:data][0][:start_at].should == "2013-03-31T00:00:00+00:00"
+      response[:details][:data][0][:visitors].should == 500
+      response[:details][:data][1][:start_at].should == "2013-03-31T01:00:00+01:00"
+      response[:details][:data][1][:visitors].should be_nil
+      response[:details][:data][2][:start_at].should == "2013-03-31T02:00:00+01:00"
+      response[:details][:data][2][:visitors].should == 500
+    end
+
+    it "should use BST for summer timestamps when going to winter" do
+      now = DateTime.parse("2013-10-28 12:00:00")
+
+      add_measurements(now - 2, now)
+
+      get '/todays-activity'
+
+      last_response.should be_ok
+
+      response = JSON.parse(last_response.body, :symbolize_names => true)
+
+      response[:details][:data][0][:start_at].should == "2013-10-27T00:00:00+01:00"
+      response[:details][:data][1][:start_at].should == "2013-10-27T01:00:00+00:00"
+      response[:details][:data][2][:start_at].should == "2013-10-27T02:00:00+00:00"
+    end
+
+    it "should use BST for the collected_at" do
+      now = DateTime.parse("2013-08-08 12:00:00")
+
+      add_measurements(now - 2, now)
+
+      get '/todays-activity'
+
+      last_response.should be_ok
+
+      response = JSON.parse(last_response.body, :symbolize_names => true)
+
+      response[:updated_at].should == "2013-08-08T12:00:00+01:00"
     end
   end
 end

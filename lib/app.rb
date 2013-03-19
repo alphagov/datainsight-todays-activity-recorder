@@ -27,6 +27,8 @@ def most_recent_collection_date(visitors)
   visitors.map(&:collected_at).max
 end
 
+TIMESTAMP_FORMAT="%Y-%m-%dT%H:%M:%S"
+
 get '/todays-activity' do
   content_type :json
   last_collected_at = HourlyUniqueVisitors.last_collected_at
@@ -43,15 +45,17 @@ get '/todays-activity' do
     :details => {
       :source => ["Google Analytics"],
       :data => 24.times.map do |hour|
+        start_at = DateTime.new(requested_date.year, requested_date.month, requested_date.day, hour)
+        end_at = start_at + Rational(1, 24)
         {
-          :start_at => DateTime.new(requested_date.year, requested_date.month, requested_date.day, hour),
-          :end_at => DateTime.new(requested_date.year, requested_date.month, requested_date.day, hour + 1),
+          :start_at => start_at.strftime(TIMESTAMP_FORMAT),
+          :end_at => end_at.strftime(TIMESTAMP_FORMAT),
           :visitors => visitors_yesterday[hour],
           :historical_average => average_traffic_for_day[hour]
         }
       end
     },
-    :updated_at => last_collected_at
+    :updated_at => last_collected_at.strftime(TIMESTAMP_FORMAT)
   }.to_json
 end
 
@@ -61,6 +65,7 @@ get '/narrative' do
     DailyUniqueVisitors.visitors_for(Date.today - 1),
     DailyUniqueVisitors.visitors_for(Date.today - 2)
   )
+  last_collected_at = DailyUniqueVisitors.latest_collected_at(Date.today - 1, Date.today - 2)
   {
     :response_info => {:status => "ok"},
     :id => "/narrative",
@@ -71,7 +76,7 @@ get '/narrative' do
         :content => narrative.message
       }
     },
-    :updated_at => DailyUniqueVisitors.latest_collected_at(Date.today - 1, Date.today - 2)
+    :updated_at => last_collected_at.strftime(TIMESTAMP_FORMAT)
   }.to_json
 end
 

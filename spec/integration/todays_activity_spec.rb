@@ -52,15 +52,15 @@ describe("Today's activity") do
 
     describe "data" do
       it "should have a start timestamp" do
-        @response[:details][:data][ 0][:start_at].should == "2013-01-24T00:00:00+00:00"
-        @response[:details][:data][ 9][:start_at].should == "2013-01-24T09:00:00+00:00"
-        @response[:details][:data][21][:start_at].should == "2013-01-24T21:00:00+00:00"
+        @response[:details][:data][ 0][:start_at].should == "2013-01-24T00:00:00"
+        @response[:details][:data][ 9][:start_at].should == "2013-01-24T09:00:00"
+        @response[:details][:data][21][:start_at].should == "2013-01-24T21:00:00"
       end
 
       it "should have an end timestamp" do
-        @response[:details][:data][ 0][:end_at].should == "2013-01-24T01:00:00+00:00"
-        @response[:details][:data][13][:end_at].should == "2013-01-24T14:00:00+00:00"
-        @response[:details][:data][23][:end_at].should == "2013-01-25T00:00:00+00:00"
+        @response[:details][:data][ 0][:end_at].should == "2013-01-24T01:00:00"
+        @response[:details][:data][13][:end_at].should == "2013-01-24T14:00:00"
+        @response[:details][:data][23][:end_at].should == "2013-01-25T00:00:00"
       end
 
       it "should expose the number of visitors for the period" do
